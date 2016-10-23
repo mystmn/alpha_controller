@@ -1,86 +1,89 @@
 from helpers import cmd
 
+
 # NMB = menu selector
 # MES = Message of display
 # COM = command to be executed
-menu_options = [
-    {
-        'NMB': 0,
-        'MES': "scan for models",
-        'COM': [
-            "jpg",
-            "html",
-            "doc",
-            "bimp",
+
+class MainMenu(object):
+
+    def __init__(self):
+        self.config = [
+            {
+                'NMB': 0,
+                'MES': "scan for models",
+                'COM': [
+                    "jpg",
+                    "html",
+                    "doc",
+                    "bimp",
+                ]
+            },
+            {
+                'NMB': 1,
+                'MES': "ultimate",
+                'COM': [
+                    "jpg",
+                    "html",
+                    "doc",
+                    "bimp",
+                    "png",
+                ]
+            },
+            {
+                'NMB': 2,
+                'MES': "run setup",
+                'COM': "Firing the engines"
+            }
         ]
-    },
-    {
-        'NMB': 1,
-        'MES': "ultimate",
-        'COM': [
-            "jpg",
-            "html",
-            "doc",
-            "bimp",
-            "png",
-        ]
-    },
-    {
-        'NMB': 2,
-        'MES': "run setup",
-        'COM': "Firing the engines"
-    }
-]
 
-
-#  return menu[int(NMB), str(MSG), str(COM)]
-def display(error=()):
-
-    if error is not ():
-        cmd.clear()
-        print("p={}\n".format(error))
-
-    else:
-        # Display a one time HEADER
-        header()
-
-    menu_range = print_menu(menu_options)
-
-    validation, user_result = choice()
-
-    if validation:
-        #  Is the user_result even optional
-        if user_result in menu_range:
-            mu = menu_options[user_result]
-            return mu['NMB'], mu['COM'], mu['MES']
+    #  return menu[int(NMB), str(MSG), str(COM)]
+    def display(self, error=()):
+        if error is not ():
+            cmd.clear()
+            print("error = {}\n".format(error))
 
         else:
-            validation, user_result = False, "The number you picked isn't optional"
+            # Display a one time HEADER
+            self.header()
 
-    #  Error has occurred, display error and try again.
-    return display(user_result)
+        menu_range = self.print_set(self.config)
 
+        validation, user_result = self.choice()
 
-def print_menu(x):
-    set_range = []
+        if validation:
+            #  Is the user_result even optional
+            if user_result in menu_range:
+                mu = self.config[user_result]
+                return mu['NMB'], mu['COM'], mu['MES']
 
-    for each in x:
-        set_range.append(each['NMB'])
+            else:
+                validation, user_result = False, "The number you picked isn't optional"
 
-        # Print the options available via menu_options
-        print('{}) {}'.format(each['NMB'], each['MES']))
-    return set_range
+        # Error has occurred, display error and try again.
+        return self.display(user_result)
 
+    @staticmethod
+    def print_set(x):
+        set_range = []
 
-def header():
-    print("{}".format("\nWelcome, go ahead and pick\n"))
+        for each in x:
+            set_range.append(each['NMB'])
 
+            # self.print_set the options available via self.config
+            print('{}) {}'.format(each['NMB'], each['MES']))
+        return set_range
 
-#  return(boolean, int||str)
-def choice():
-    x = input("Which option would you like? > ")
-    try:
-        return True, int(x)
+    @staticmethod
+    def header():
+        print("{}".format("\nWelcome, go ahead and pick\n"))
 
-    except:
-        return False, "You chose '{}', which is a type={}.\nPlease pick again".format(x, type(x))
+    #  return(boolean, int||str)
+    @staticmethod
+    def choice():
+        x = input("Which option would you like? > ")
+        try:
+            return True, int(x)
+
+        except:
+            return False, "You chose '{}', which is a type={}.\nPlease pick again".format(x, type(x))

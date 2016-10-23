@@ -1,8 +1,11 @@
 import os
+from helpers import cmd
+
+cmd.clear()
 
 cl_setup = {
-    'ProjectName': "Project Master Blaster has begun",
-    'ProjectPurpose': "This script was created to scan a network for information",
+    'ProjectName': "** Project Master Blaster has begun ** ",
+    'ProjectPurpose': "** This script was created to scan a network for information **",
     'Schedule': False,
     'Menu': False,
     'Logs': True,

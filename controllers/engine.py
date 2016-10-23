@@ -1,10 +1,8 @@
-from helpers import menu
+from helpers.menu import MainMenu as MM
 
 
-def test():
-    pass
+class Main(object):
+    def __init__(self):
+        number, command, message = MM().display()
 
-
-def start():
-    number, command, message = menu.display()
-    print(command)
+        print("{} | {} | {}".format(number, command, message))
