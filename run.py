@@ -5,8 +5,6 @@ import config.main as config
 print(config.cl_setup['ProjectName'])
 print(config.cl_setup['ProjectPurpose'])
 
-#  Display our menu
-ce.Main()
-#  Make universal Controller
+ce.Main().start()
 
 # -->  Model can only be run within the Controller

@@ -11,29 +11,23 @@ class MainMenu(object):
         self.config = [
             {
                 'NMB': 0,
-                'MES': "scan for models",
+                'MES': "Scan for all information",
                 'COM': [
-                    "jpg",
-                    "html",
-                    "doc",
-                    "bimp",
+                    "jpg"
                 ]
             },
             {
                 'NMB': 1,
-                'MES': "ultimate",
+                'MES': "Dummy #1",
                 'COM': [
-                    "jpg",
-                    "html",
-                    "doc",
-                    "bimp",
-                    "png",
+                    "ex1",
+                    "ex2",
                 ]
             },
             {
                 'NMB': 2,
-                'MES': "run setup",
-                'COM': "Firing the engines"
+                'MES': "Dummy #2",
+                'COM': "..and here we go!"
             }
         ]
 
@@ -64,10 +58,10 @@ class MainMenu(object):
         return self.display(user_result)
 
     @staticmethod
-    def print_set(x):
+    def print_set(list_config):
         set_range = []
 
-        for each in x:
+        for each in list_config:
             set_range.append(each['NMB'])
 
             # self.print_set the options available via self.config
@@ -76,7 +70,7 @@ class MainMenu(object):
 
     @staticmethod
     def header():
-        print("{}".format("\nWelcome, go ahead and pick\n"))
+        print("{}".format("\nWelcome,\n"))
 
     #  return(boolean, int||str)
     @staticmethod
