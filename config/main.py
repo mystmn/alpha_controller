@@ -10,7 +10,8 @@ cl_setup = {
     'Schedule': False,
     'Menu': False,
     'Logs': True,
-    'Model': r'{}{}'.format(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')), "/models1/"),
+    'Model': r'{}{}'.format(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')), "/models/"),
+    'Controller': r'{}{}'.format(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')), "/controllers/"),
     'Root': r'{}{}'.format(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')), "/"),
 }
 
