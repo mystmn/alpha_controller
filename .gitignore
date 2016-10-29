@@ -1,5 +1,0 @@
-*.log
-.git/
-.idea/
-.batchfile/
-.venv/
