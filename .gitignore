@@ -1,5 +1,4 @@
 *.log
-.git
-.idea
-.batchfile
-.venv
+idea/
+batchfile/
+venv/
