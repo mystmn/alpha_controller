@@ -1,42 +1,49 @@
 import logging
+import os.path
 import datetime
 
 
 class LogCaller(object):
-    def write_file(self, func='N/A', message=''):
-        x = datetime.datetime.now().strftime("%y")
-        logging.basicConfig(filename=x + ".log", level=logging.INFO, filemode="w")
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def informative(x={}, message='NA'):
         """
-        The main entry point of the application
-        """
-        logger = logging.getLogger(func)
-        logger.setLevel(logging.INFO)
+          The main entry point of the application
+          """
+
+        if x.upper() == "INFO":
+            print(x)
+
+            logger = logging.getLogger("INFO")
+            logger.setLevel(logging.INFO)
+
+        elif x.upper() == "CRITICAL":
+            logger = logging.getLogger("CRITICAL")
+            logger.setLevel(logging.CRITICAL)
+
+        else:
+            logger = logging.getLogger("DEBUG")
+            logger.setLevel(logging.DEBUG)
 
         # create the logging file handler
-        fh = logging.FileHandler("notification.log")
+        fh = logging.FileHandler("dump.log")
 
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)
 
         # add handler to logger object
         logger.addHandler(fh)
 
-        logger.info("Program started")
-        logger.info("Done!")
+        if x.upper() == "INFO":
+            logger.info("Program started")
 
+        elif x.upper() == "CRITICAL":
+            logger.critical("HAHA!")
+
+        else:
+            pass
 
 if __name__ == "__main__":
-    LogCaller().write_file()
-
-
-    def cldebug(self, messsage="NA"):
-        #  Create a file log
-        self.write_file(logging.debug(messsage))
-
-
-    def information(self, message="NA"):
-        logging.info(message)
-
-
-    def e_log(self, message="NA"):
-        logging.error(message)
+    LogCaller.informative()

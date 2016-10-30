@@ -9,7 +9,6 @@ class Main(object):
             'elogger': [],
         }
 
-
     def start(self):
         print(config.cl_setup['ProjectName'])
         print(config.cl_setup['ProjectPurpose'])
@@ -19,10 +18,8 @@ class Main(object):
 
         print("{} | {} | {}".format(number, command, message))
 
-        self.settler['elogger']
-
-        LogCaller().write_file(__name__, "Go bucks!")
-
+        x = LogCaller
+        x.informative('INFO', "Testing of the log")
         #  Commands to send out among the network to gather
         #  -> Models, Names, IP
 
