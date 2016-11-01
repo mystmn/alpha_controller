@@ -1,49 +1,43 @@
-import logging
-import os.path
-import datetime
+import logging ## https://aykutakin.wordpress.com/2013/08/06/logging-to-console-and-file-in-python/
 
 
-class LogCaller(object):
-    def __init__(self):
-        pass
+def debug(message='NA'):
+    # create the logging file handler
+    file_handler = logging.FileHandler("dump.log")
 
-    @staticmethod
-    def informative(x={}, message='NA'):
-        """
-          The main entry point of the application
-          """
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger = logging.getLogger("DEBUG")
 
-        if x.upper() == "INFO":
-            print(x)
+    # Setting the record to be written
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+    logger.debug(message)
 
-            logger = logging.getLogger("INFO")
-            logger.setLevel(logging.INFO)
 
-        elif x.upper() == "CRITICAL":
-            logger = logging.getLogger("CRITICAL")
-            logger.setLevel(logging.CRITICAL)
+def critical(message='NA'):
+    # create the logging file handler
+    file_handler = logging.FileHandler("dump.log")
 
-        else:
-            logger = logging.getLogger("DEBUG")
-            logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
 
-        # create the logging file handler
-        fh = logging.FileHandler("dump.log")
+    logger = logging.getLogger("CRITICAL")
+    logger.setLevel(logging.CRITICAL)
+    logger.addHandler(file_handler)
+    logger.critical(message)
 
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        fh.setFormatter(formatter)
 
-        # add handler to logger object
-        logger.addHandler(fh)
+def info(message='NA'):
+    """ insert[debug, critical, info], save classer and message to file """
 
-        if x.upper() == "INFO":
-            logger.info("Program started")
+    # create the logging file handler
+    file_handler = logging.FileHandler("dump.log")
 
-        elif x.upper() == "CRITICAL":
-            logger.critical("HAHA!")
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
 
-        else:
-            pass
-
-if __name__ == "__main__":
-    LogCaller.informative()
+    logger = logging.getLogger("INFO")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(file_handler)
+    logger.info(message)

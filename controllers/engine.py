@@ -1,5 +1,5 @@
 import config.main as config
-from helpers.logs import LogCaller
+from helpers import logs
 from helpers.menu import MainMenu as MM
 
 
@@ -18,8 +18,9 @@ class Main(object):
 
         print("{} | {} | {}".format(number, command, message))
 
-        x = LogCaller
-        x.informative('INFO', "Testing of the log")
+        logs.debug("And blah, blah, blah!")
+        logs.info("And blah, blah, blah!")
+
         #  Commands to send out among the network to gather
         #  -> Models, Names, IP
 
