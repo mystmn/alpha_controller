@@ -1,12 +1,16 @@
 import config.main as config
 from helpers import logs
-from helpers.menu import MainMenu as MM
+from helpers.menu import Display
+from helpers.nmap import NetworkScanner
 
 
 class Main(object):
     def __init__(self):
-        self.settler = {
-            'elogger': [],
+        #  helpers.logs.[info, debug, critical] RETURN ['func', 'message']
+        self.log = {
+            'func':
+                __name__ + "_start",
+            'message': False,
         }
 
     def start(self):
@@ -14,15 +18,18 @@ class Main(object):
         print(config.cl_setup['ProjectPurpose'])
         print(config.cl_setup['Model'])
 
-        number, command, message = MM().display()
+        #  Only passes if completed.
+        number, command, message = Display().welcome()
 
-        print("{} | {} | {}".format(number, command, message))
+        self.log['message'] = "User chose {} for command {}".format(number, command)
+        logs.info(self.log)
+        #  self.log saved logs to file
+        #  self.log {'func', 'message'}
 
-        logs.debug("And blah, blah, blah!")
-        logs.info("And blah, blah, blah!")
-
+        NetworkScanner.process()
         #  Commands to send out among the network to gather
         #  -> Models, Names, IP
+
 
         #  Data Harvesting
         #  -> Sites

@@ -5,7 +5,7 @@ from helpers import cmd
 # MES = Message of display
 # COM = command to be executed
 
-class MainMenu(object):
+class Display(object):
 
     def __init__(self):
         self.config = [
@@ -32,7 +32,7 @@ class MainMenu(object):
         ]
 
     #  return menu[int(NMB), str(MSG), str(COM)]
-    def display(self, error=()):
+    def welcome(self, error=()):
         if error is not ():
             cmd.clear()
             print("error = {}\n".format(error))
