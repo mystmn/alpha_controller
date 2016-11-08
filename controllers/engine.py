@@ -10,10 +10,12 @@ class Main(object):
         self.log = {
             'func':
                 __name__ + "_start",
-            'message': False,
+            'list': [],
         }
 
     def start(self):
+        list_log = []
+
         print(config.cl_setup['ProjectName'])
         print(config.cl_setup['ProjectPurpose'])
         print(config.cl_setup['Model'])
@@ -21,12 +23,15 @@ class Main(object):
         #  Only passes if completed.
         number, command, message = Display().welcome()
 
-        self.log['message'] = "User chose {} for command {}".format(number, command)
-        logs.info(self.log)
-        #  self.log saved logs to file
-        #  self.log {'func', 'message'}
+        list_log.append("{}, {}".format(number, command))
 
-        NetworkScanner.process()
+        list_log.append(NetworkScanner().process())
+
+        #  self.log saves entry to our file
+        #  @ return [func, list]
+        self.log['list'] = list_log
+        logs.info(self.log)
+
         #  Commands to send out among the network to gather
         #  -> Models, Names, IP
 

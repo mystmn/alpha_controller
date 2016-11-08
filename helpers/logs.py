@@ -1,4 +1,4 @@
-import logging ## https://aykutakin.wordpress.com/2013/08/06/logging-to-console-and-file-in-python/
+import logging  ## https://aykutakin.wordpress.com/2013/08/06/logging-to-console-and-file-in-python/
 
 
 def debug(x='NULL'):
@@ -34,7 +34,7 @@ def critical(message='NA'):
     logger.critical(message)
 
 
-def info(class_function='NULL'):
+def info(cl_func='NULL'):
     """ insert[debug, critical, info], save classer and message to file """
 
     # create the logging file handler
@@ -47,12 +47,16 @@ def info(class_function='NULL'):
     logger.setLevel(logging.INFO)
     logger.addHandler(file_handler)
 
-    if isinstance(class_function, dict):
-        if not class_function.get('message'):
-            length_message = "cf({}), e('Message': \"Not Set\")".format(str(class_function['func']))
-        else:
-            length_message = "cf({}), m({})".format(str(class_function['func']), str(class_function['message']))
-    else:
-        length_message = "cf({}), e({})".format(str(class_function['func']), bool(False))
+    if isinstance(cl_func['list'], list):
 
-    logger.info(length_message)
+        # message, func, list
+        for each_message in cl_func['list']:
+            logger.info("cf({}), list({})".format(str(cl_func['func']), str(each_message)))
+
+    elif isinstance(cl_func['list'], dict):
+
+        for k, v in cl_func['list'].items():
+            logger.info("cf({}), dict({}: {})".format(str(cl_func['func']), str(k), str(v)))
+
+    else:
+        logger.info("cf({}), str({})".format(str(cl_func['func']), str(cl_func['list'])))
