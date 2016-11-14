@@ -22,6 +22,7 @@ class NetworkScanner(object):
         return s
 
     def whats_my_ip(self):
+        start, stop = 0, 4
         find_all = []
         by_six = []
         r = subprocess.Popen(['route', '-n'], stdout=subprocess.PIPE)
@@ -30,35 +31,66 @@ class NetworkScanner(object):
 
         splitting = tc[0].decode().split(" ")
         new = list(filter(None, splitting))
-        results = self.find_characters(new)
+
+        cleansed_markers = self.position_word(new, "\n")
 
         with open("test.txt", "w", newline="\n") as f:
-            f.write(str(results))
+            f.write(str(tc[0].decode()))
+            f.write("\nheader declared ={}\n\n".format(new[:stop]))
+
+            i = 0
+            s = []
+
+            for each in cleansed_markers:
+                print(each)
+                for k, v in each.items():
+
+                    if k <=3:
+                        pass
+                    else:
+                        i += 1
+                        s.append(v)
+            f.write("{}".format(s))
+
+            for i, each in enumerate(s):
+                if i % 8 == 0:
+                    f.write("{}".format(each))
+
+                    f.write("{}".format("\n"))
+
+                else:
+                    f.write("{} \t".format(each))
+
             #  f.write(self.find_gate_way(tc[0].decode()))
-        f.close()
-
-        p = tc[0].decode()
-        s = "wlo1"
-        r = "mtu"
-
-        results = self.find_position_range(p, s, r)
-        find_all.append("find={}, pos={}".format("both", results))
+            f.close()
 
         return find_all
         #  print(p[0][:search])
         #  print(pos.find("1:"))
 
-    def find_characters(self, lines=(), start=()):
-        positioning = []
-        for each_word in lines:
+    @staticmethod
+    def position_word(per_lines=(), found=()):
+        classy = {}
+        rows = []
+        i = 0
 
-            if "\n" in str(each_word):
-                positioning.append(each_word)
+        for each_word in per_lines:
 
-        return positioning
+            i += 1
 
+            if found in str(each_word):
+                find_x = each_word.find("\n")
 
+                before, after = each_word[:find_x], each_word[find_x + 1:]
 
+                rows.append({i: before})
+                i += 1
+                rows.append({i: after})
+
+            else:
+                rows.append({i: each_word})
+
+        return rows
 
     def find_gate_way(self, listings=(), spacing=()):
         r = listings.split()
