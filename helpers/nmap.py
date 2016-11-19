@@ -22,75 +22,90 @@ class NetworkScanner(object):
         return s
 
     def whats_my_ip(self):
-        start, stop = 0, 4
-        find_all = []
-        by_six = []
+        header_stop = 4
+        row_start_pos = []
+        row = 8
+        col = 3
+        
         r = subprocess.Popen(['route', '-n'], stdout=subprocess.PIPE)
 
         tc = r.communicate()  # tc = terminal communication
 
-        splitting = tc[0].decode().split(" ")
-        new = list(filter(None, splitting))
+        present_as_list = list(filter(None, tc[0].decode().split(" ")))
 
-        cleansed_markers = self.position_word(new, "\n")
+        markers_dict = self.search_replace_list(present_as_list, "\n")
 
         with open("test.txt", "w", newline="\n") as f:
-            f.write(str(tc[0].decode()))
-            f.write("\nheader declared ={}\n\n".format(new[:stop]))
 
-            i = 0
-            s = []
+            #  [{i: value}, {i: value}...]
+            #  returns [value, value...]
+            marker_list = self.skip_header_and_re_list(markers_dict, header_stop)
 
-            for each in cleansed_markers:
-                print(each)
+            for num, each in enumerate(marker_list):
+
+                #  is this a starting row string
+                if num % row == 0:  # find the row starting position
+                    f.write("\n")
+
+                    if num >= row:  # No need to gather Row Header
+                        row_start_pos.append(num + col)
+
+                for e in row_start_pos:
+                    if num == e:  # IS list[position] == col + row
+                        f.write("#{: >17}".format(each))
+
+                #  If not a starting row string then print
+                f.write("{: >17}".format(each))
+
+            # f.write(self.find_gate_way(tc[0].decode()))
+            f.close()
+
+        #  print(p[0][:search])
+        #  print(pos.find("1:"))
+
+    #  Take list, skip a range, and re key
+    #  @ x[0:3]
+    @staticmethod
+    def skip_header_and_re_list(x, num):
+        i = 0
+        s = []
+
+        if isinstance(x, list):
+            for each in x:
                 for k, v in each.items():
 
-                    if k <=3:
+                    if k <= num:  # Header is k[0:3]
                         pass
                     else:
                         i += 1
                         s.append(v)
-            f.write("{}".format(s))
+        else:
+            pass
 
-            for i, each in enumerate(s):
-                if i % 8 == 0:
-                    f.write("{}".format(each))
+        return s
 
-                    f.write("{}".format("\n"))
-
-                else:
-                    f.write("{} \t".format(each))
-
-            #  f.write(self.find_gate_way(tc[0].decode()))
-            f.close()
-
-        return find_all
-        #  print(p[0][:search])
-        #  print(pos.find("1:"))
-
-    @staticmethod
-    def position_word(per_lines=(), found=()):
-        classy = {}
-        rows = []
+    @staticmethod  # search for string, split word, and return list()
+    def search_replace_list(line=(), char_search=()):
+        new_line = []
         i = 0
 
-        for each_word in per_lines:
+        for words in line:
 
             i += 1
 
-            if found in str(each_word):
-                find_x = each_word.find("\n")
+            if char_search in str(words):
+                find_x = words.find(char_search)
 
-                before, after = each_word[:find_x], each_word[find_x + 1:]
+                before, after = words[:find_x], words[find_x + 1:]
 
-                rows.append({i: before})
+                new_line.append({i: before})
                 i += 1
-                rows.append({i: after})
+                new_line.append({i: after})
 
             else:
-                rows.append({i: each_word})
+                new_line.append({i: words})
 
-        return rows
+        return new_line
 
     def find_gate_way(self, listings=(), spacing=()):
         r = listings.split()
