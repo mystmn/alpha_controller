@@ -1,4 +1,6 @@
 import subprocess
+import os
+import multiprocessing.dummy
 
 
 class NetworkScanner(object):
@@ -7,26 +9,59 @@ class NetworkScanner(object):
         self.black_list = ''
         self.string_formatter = 'nmap'
 
+    '''
+        Uses OS.System to ping a count of 2
+        :return string(list_r)
+    '''
+
+    @staticmethod
+    def multi_proc_ping(x=()):
+        list_r = []
+
+        response = os.system("ping -c 2 " + x)
+
+        if not bool(response):
+            list_r.append(x)
+
+        return str(list_r)
+
+    '''
+        Multi treads ping and return results
+        :return list(cleaner_results)
+    '''
+
     def process(self):
-        s = self.whats_my_ip()
-        '''
-        segment = input("What's the segment?")
+        set_gateway_returns = self.terminal_route()
 
-        try:
-            test = subprocess.Popen(["ping", segment, "-c", "3"], stdout=subprocess.PIPE)
-            print(test.communicate())
+        core_count = 4 * multiprocessing.cpu_count()
+        p = multiprocessing.dummy.Pool(core_count)
 
-        except:
-            print("Not looking good")
-        '''
-        return s
+        results = p.map(self.multi_proc_ping, [x for x in set_gateway_returns])
 
-    def whats_my_ip(self):
+        cleaner_results = list(filter(None, results))
+
+        with open("test.txt", "w", newline="\n") as f:
+            f.write("{}".format(cleaner_results))
+
+        f.close()
+
+        return cleaner_results
+
+    '''
+        Call $route -n
+        Remove header range()...
+        Create list with results...
+        Find row starts from \n and...
+        :return set(list_exception_column)
+    '''
+
+    def terminal_route(self):
         header_stop = 4
         row_start_pos = []
         row = 8
-        col = 3
-        
+        exception_column = 1
+        list_exception_column = []
+
         r = subprocess.Popen(['route', '-n'], stdout=subprocess.PIPE)
 
         tc = r.communicate()  # tc = terminal communication
@@ -35,39 +70,30 @@ class NetworkScanner(object):
 
         markers_dict = self.search_replace_list(present_as_list, "\n")
 
-        with open("test.txt", "w", newline="\n") as f:
+        #  [{i: value}, {i: value}...]
+        #  returns [value, value...]
+        marker_list = self.skip_header_and_re_list(markers_dict, header_stop)
 
-            #  [{i: value}, {i: value}...]
-            #  returns [value, value...]
-            marker_list = self.skip_header_and_re_list(markers_dict, header_stop)
+        for num, each in enumerate(marker_list):
 
-            for num, each in enumerate(marker_list):
+            if num % row == 0:  # find the row starting position
 
-                #  is this a starting row string
-                if num % row == 0:  # find the row starting position
-                    f.write("\n")
+                if num >= row:  # No need to gather Row Header
+                    row_start_pos.append(num + exception_column)
 
-                    if num >= row:  # No need to gather Row Header
-                        row_start_pos.append(num + col)
+            for e in row_start_pos:
 
-                for e in row_start_pos:
-                    if num == e:  # IS list[position] == col + row
-                        f.write("#{: >17}".format(each))
+                if num == e:  # IS list[position] == exception_column + row
+                    list_exception_column.append(each)
 
-                #  If not a starting row string then print
-                f.write("{: >17}".format(each))
+        return set(list_exception_column)
 
-            # f.write(self.find_gate_way(tc[0].decode()))
-            f.close()
+    ''' Take list, skip a range, and return list()
+        :return list(s)
+    '''
 
-        #  print(p[0][:search])
-        #  print(pos.find("1:"))
-
-    #  Take list, skip a range, and re key
-    #  @ x[0:3]
     @staticmethod
-    def skip_header_and_re_list(x, num):
-        i = 0
+    def skip_header_and_re_list(x=(), num=()):
         s = []
 
         if isinstance(x, list):
@@ -77,28 +103,35 @@ class NetworkScanner(object):
                     if k <= num:  # Header is k[0:3]
                         pass
                     else:
-                        i += 1
+
                         s.append(v)
         else:
             pass
 
-        return s
+        return list(s)
+
+    '''
+        Find character and replace
+        if character is combined within two strings it appends both
+        to a list
+        :return class {i: value}
+    '''
 
     @staticmethod  # search for string, split word, and return list()
-    def search_replace_list(line=(), char_search=()):
+    def search_replace_list(line=(), x=()):
         new_line = []
         i = 0
 
         for words in line:
-
             i += 1
 
-            if char_search in str(words):
-                find_x = words.find(char_search)
+            if x in str(words):
+                found_x = words.find(x)
 
-                before, after = words[:find_x], words[find_x + 1:]
+                before, after = words[:found_x], words[found_x + 1:]
 
                 new_line.append({i: before})
+
                 i += 1
                 new_line.append({i: after})
 
@@ -107,28 +140,6 @@ class NetworkScanner(object):
 
         return new_line
 
-    def find_gate_way(self, listings=(), spacing=()):
-        r = listings.split()
-        return r
-
-    def find_position_range(self, full_line=(), start=(), finish=()):
-
-        try:
-            count_finish = len(finish)
-
-            start_position = full_line.find(start)
-            second_position = full_line[start_position:].find(finish)
-
-            added_positioning = start_position + second_position
-        except:
-            print("error")
-
-        return full_line[start_position:added_positioning + count_finish]
-
-# What's my list of segments?
-
-# Then Throw the commands
-
-# Save the results
-
-# What to do with the results?
+    @staticmethod
+    def find_gate_way(listings=()):
+        return listings.split()
