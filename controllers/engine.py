@@ -25,7 +25,9 @@ class Main(object):
 
         list_log.append("{}, {}".format(number, command))
 
-        list_log.append(NetworkScanner().process())
+        NS = NetworkScanner()
+
+        list_log.append("{}".format(NS.process()))
 
         #  self.log saves entry to our file
         #  @ return [func, list]
