@@ -1,125 +1,72 @@
-import model, os
+import os
 import sqlite3 as sql3
 
 
 class DbController(object):
-    def __init__(self, db_file=None, table=None, col=None, limit='20'):
+    def __init__(self, db_file=None, table=None):
         self.db = db_file
         self.table = table
-        self.col = ['name', 'description']
-        self.limit = limit
+        self.log = []
 
-    @staticmethod
-    def config():
+    def config(self):
         return {
-            'db': model.config()['Model'],
+            'db': self.db,
             'desc': 'ORDER BY {} DESC'.format('id'),  # SELECT * FROM tablename ORDER BY column DESC LIMIT 1;
         }
 
-    def test_creation_table(self):
+    def connection_hub(self, table, var, selector="*"):
+        self.validate_db_path()
+        # create table if not exists TableName(col1 typ1, ..., colN typN)
 
-        # 'Create TABLE bob (rowid INTEGER PRIMARY KEY, devices TEXT CHAR (50) NOT NULL)'
-        # SELECT `type` FROM `cats`
-        # sqlite3 mydatabase.db < db.schema
+        with sql3.connect(self.db) as conn:
+            c = conn.cursor()
+
+            if self.check_record_exist(c, table):
+
+                if var == "select":
+                    s = "SELECT "
+
+                    if isinstance(selector, list):
+                        s += "{s}".format(s=', '.join(selector))
+                    else:
+                        s += "{s}".format(s=selector)
+
+                    s += " FROM {tn}".format(tn=table)
+
+                    c.execute(s)
+                    results = c.fetchall()
+                    print(results)
+            elif var == "insert":
+                pass
+
+            else:
+                pass
+
+        return self.log
+
+    def check_record_exist(self, open_link, table):
         try:
-            con = sql3.connect(self.config()['db'] + self.db)
-
-            print(",".join(self.col))
-
-            con.cursor().execute('INSERT INTO {}({},{}) VALUES (?,?)'.format(self.table, 'name', 'description'),
-                                 ("iron manss", "Gogogog!")
-                                 )
-            con.commit()
-            con.close()
-            return "Inserted data successful"
-
-        except:
-            return "Failed Migration"
-
-            # cursor = con.cursor().execute('SELECT `name` FROM `{}` '.format('project'))
-            # print(cursor.fetchall())
-            # con.close()
-
-    def test_insert_data(self):
-        con = sql3.connect(self.config()['db'] + self.db)
-        cursor = con.cursor().execute("INSERT INTO {}({},{},{},{}, {}) VALUES (?,?,?,?,? )" \
-                                      .format(self.table, sc[0], sc[1], sc[2], sc[3], sc[4]), (a, b, c, d, e)
-                                      )
-        con.commit()
-        con.close()
-
-    def table_confirm_exist(self, loop=False):
-
-        # print(self.config()['db'])
-        # print(os.path.exists(self.config()['db'] + self.db))
-
-        if not os.path.exists(self.config()['db'] + self.db):
-
-            if not loop:
-                try:
-                    os.chdir(self.config()['db'])
-                    open(self.db, "w")
-
-                except:
-                    return False
-
-                return self.table_confirm_exist(True)
-
-            return False
-
-        else:
+            open_link.execute('SELECT 1 FROM {tn} LIMIT 1'.format(tn=table))
+            open_link.fetchall()
+            self.log.append("Confirmed data in query .table={}".format(table))
             return True
 
-    def table_creation(self):
-
-        try:
-            with sql3.connect(self.config()['db'] + self.db) as con:
-                con.cur().execute('CREATE TABLE {} (' \
-                                  'rowid INTEGER PRIMARY KEY, ' \
-                                  '{} TEXT CHAR(50) NOT NULL, ' \
-                                  '{} TEXT CHAR(50), ' \
-                                  '{} TEXT CHAR(50), ' \
-                                  '{} TEXT CHAR(50), ' \
-                                  '{} CURRENT_TIMESTAMP' \
-                                  ')'.format(self.table, "bob", "rose", "mary", "cars"))
-                con.commit()
-                con.close()
-            return [True, "Created Table"]
         except:
-            return [False, "Table wasn't created, it may already exist"]
+            self.log.append("Data is {}=None".format(table))
+            return False
 
+    def validate_db_path(self):
 
-'''
-    def table_insert(self, a="", b="", c="", d="", e=""):
-        sc = self.config()['c']
+        if not os.path.exists(self.db):
 
-        with sql3.connect(self.config()['db']) as con:
-            con.cursor().execute("INSERT INTO {}({},{},{},{}, {}) VALUES (?,?,?,?,? )" \
-                                 .format(self.table, sc[0], sc[1], sc[2], sc[3], sc[4]), (a, b, c, d, e))
-            con.commit()
-        con.close()
-        return [True, "Data Inserted, {}, {}, {},{}".format(a, b, c, d)]
+            try:
+                os.chdir(self.db)
+                open(self.db, "w")
+                self.validate_db_file()
+                self.log.append("Created DB file {}".format(self.db))
 
-    def table_select(self, params=(), limit=()):
-        s = "SELECT "
-        n = "LIMIT "
+            except:
+                self.log.append("Unable to create db file {}".format(self.db))
 
-        with sql.connect(self.config()['db']) as con:
-            cur = con.cursor()
-
-            if params == ():
-                # result = cur.execute("SELECT * FROM {}".format(TABLE, limit))
-                s += "* FROM "
-            else:
-                s += "{} FROM ".format(params)
-
-            if limit == ():
-                s += "{} {}".format(str(self.table), n + str(self.config()['limit']))
-            else:
-                s += "{} {}".format(str(self.table), n + str(limit))
-
-            result = cur.execute(s).fetchall()
-
-        con.close()
-        return result
-'''
+        else:
+            self.log.append("Confirmed file exist {}".format(self.db))

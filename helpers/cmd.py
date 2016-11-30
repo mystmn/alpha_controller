@@ -3,8 +3,7 @@ import subprocess
 
 
 def clear():
-    c = os.system('cls' if os.name == 'nt' else 'clear')
-    return c
+    return os.system('cls' if os.name == 'nt' else 'clear')
 
 
 class Terminal(object):

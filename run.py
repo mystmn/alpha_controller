@@ -1,6 +1,6 @@
-from controllers.engine import Main as CE
+from controllers.engine import Main
 
-c = CE()
+c = Main()
 c.start()
 
 # -->  Model can only be run within the Controller

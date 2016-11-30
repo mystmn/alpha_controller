@@ -1,48 +1,9 @@
 import os, multiprocessing.dummy
 import helpers.misc as misc
-from helpers.cmd import Terminal
+from helpers.cmd import Terminal, clear
 
 
 class NetworkScanner(object):
-    def process(self, test=False):
-        f_name = "nmap.txt"
-        f_permissions = "w"
-        
-        '''
-        :var test
-
-        :return list(cleaner_results)
-
-        :raises None
-        '''
-
-        tc = Terminal.linux(['route', '-n'])
-
-        td = Terminal.decode(tc)
-
-        rl = self.route_layout(td)
-
-        cores = self.processor_count()
-
-        thread_results = cores.map(self.multi_proc_ping, [blank for blank in rl])
-
-        process_done = list(filter(None, thread_results))
-
-        if test:
-            with open(f_name, f_permissions, newline="\n") as f:
-                f.write("{}".format(process_done))
-
-            f.close()
-
-        return process_done
-
-    @staticmethod
-    def processor_count():
-
-        core_count = 4 * multiprocessing.cpu_count()
-
-        return multiprocessing.dummy.Pool(core_count)
-
     @staticmethod
     def multi_proc_ping(x=()):
         '''
@@ -57,6 +18,47 @@ class NetworkScanner(object):
             list_r.append(x)
 
         return str(list_r)
+
+    def route_gateway(self, test=False):
+        f_name = "nmap.txt"
+        f_permissions = "w"
+
+        '''
+        :var test
+
+        :return list(cleaner_results)
+
+        :raises None
+        '''
+
+        tc = Terminal.linux(['route', '-n'])
+
+        td = Terminal.decode(tc)
+
+        rl = self.route_layout(td)
+
+        cores = self.route_gateway_count()
+
+        thread_results = cores.map(self.multi_proc_ping, [blank for blank in rl])
+
+        clear()
+
+        route_gateway_done = list(filter(None, thread_results))
+
+        if test:
+            with open(f_name, f_permissions, newline="\n") as f:
+                f.write("{}".format(route_gateway_done))
+
+            f.close()
+
+        return route_gateway_done
+
+    @staticmethod
+    def route_gateway_count():
+
+        core_count = 4 * multiprocessing.cpu_count()
+
+        return multiprocessing.dummy.Pool(core_count)
 
     @staticmethod
     def route_layout(x):
@@ -98,8 +100,4 @@ class NetworkScanner(object):
 if __name__ == "__main__":
     NS = NetworkScanner()
 
-    x = NS.process(True)
-    print(x)
-
-else:
-    pass
+    print(NS.route_gateway(True))

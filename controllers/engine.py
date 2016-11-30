@@ -2,6 +2,7 @@ import config.main as config
 from helpers import logs
 from helpers.menu import Display
 from helpers.nmap import NetworkScanner
+from models.setup_config import DbController
 
 
 class Main(object):
@@ -14,7 +15,7 @@ class Main(object):
         }
 
     def start(self):
-        list_log = []
+        logger = []
 
         print(config.cl_setup['ProjectName'])
         print(config.cl_setup['ProjectPurpose'])
@@ -23,15 +24,19 @@ class Main(object):
         #  Only passes if completed.
         number, command, message = Display().welcome()
 
-        list_log.append("{}, {}".format(number, command))
+        #logger.append("{}, {}".format(number, command))
 
-        NS = NetworkScanner()
+        #logger.append("{}".format(NetworkScanner().route_gateway()))
 
-        list_log.append("{}".format(NS.process()))
+        DBC = DbController(config.cl_setup['Model'] + "main.db")
+
+        DBClog = DBC.connection_hub("project", "select", ['name', 'deadline'])
+
+        [logger.append(x) for x in DBClog]
 
         #  self.log saves entry to our file
         #  @ return [func, list]
-        self.log['list'] = list_log
+        self.log['list'] = logger
         logs.info(self.log)
 
         #  Commands to send out among the network to gather
