@@ -28,10 +28,12 @@ class Main(object):
 
         #logger.append("{}".format(NetworkScanner().route_gateway()))
 
-        DBC = DbController(config.cl_setup['Model'] + "main.db")
+        DBC = DbController(config.cl_setup['Model'] + "main.db", "project")
 
-        DBClog = DBC.connection_hub("project", "select", ['name', 'deadline'])
+        # DBClog = DBC.connection_hub("select", ['name', 'deadline'])
+        # [logger.append(x) for x in DBClog]
 
+        DBClog = DBC.connection_hub("insert", ['name', 'description', 'deadline'], ["Jonah", "loves", "food"])
         [logger.append(x) for x in DBClog]
 
         #  self.log saves entry to our file

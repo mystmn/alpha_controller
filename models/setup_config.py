@@ -14,45 +14,83 @@ class DbController(object):
             'desc': 'ORDER BY {} DESC'.format('id'),  # SELECT * FROM tablename ORDER BY column DESC LIMIT 1;
         }
 
-    def connection_hub(self, table, var, selector="*"):
+    def connection_hub(self, var, name_columns, insert_values=""):
         self.validate_db_path()
         # create table if not exists TableName(col1 typ1, ..., colN typN)
 
         with sql3.connect(self.db) as conn:
-            c = conn.cursor()
+            secure_conn = conn.cursor()
 
-            if self.check_record_exist(c, table):
+            if self.check_record_exist(secure_conn):  # Validate the requested table exist and there's one record
 
                 if var == "select":
-                    s = "SELECT "
+                    self.log.append(self.select_db(secure_conn, name_columns))
 
-                    if isinstance(selector, list):
-                        s += "{s}".format(s=', '.join(selector))
+                elif var == "insert":
+                    x, mes = self.insert_db(secure_conn, name_columns, insert_values)
+
+                    if x:
+                        self.log.append("Successful = {}".format(mes))
+                        conn.commit()
                     else:
-                        s += "{s}".format(s=selector)
-
-                    s += " FROM {tn}".format(tn=table)
-
-                    c.execute(s)
-                    results = c.fetchall()
-                    print(results)
-            elif var == "insert":
-                pass
-
-            else:
-                pass
+                        print("{}".format(mes))
+                else:
+                    self.log.append("Database did nothing")
 
         return self.log
 
-    def check_record_exist(self, open_link, table):
+    def insert_db(self, secure_conn, columns="", values=""):
+
+        if not len(columns) is len(values):
+            self.log.append("len(Columns) != len(values) for {}".format(self.table))
+            return False
+
         try:
-            open_link.execute('SELECT 1 FROM {tn} LIMIT 1'.format(tn=table))
+            s = "INSERT INTO {tn} (".format(tn=self.table)
+            g, k = "", ""
+
+            for x in columns:
+                g += "{},".format(x)
+
+            s += g[:-1] + ") VALUES ("
+
+            for v in values:
+                k += "'{}',".format(v)
+
+            s += k[:-1] + ")"
+            secure_conn.execute(s)
+            final = True, s
+
+        except sql3.IntegrityError:
+            final = False, "TABLE={} requires a UNIQUE VALUE NOT ({})".format(self.table, values)
+
+        self.log.append(final)
+
+        return final
+
+    def select_db(self, secure_conn, name_columns="*"):
+        s = "SELECT "
+
+        if isinstance(name_columns, list):
+            s += "{s}".format(s=', '.join(name_columns))
+        else:
+            s += "{s}".format(s=name_columns)
+
+        s += " FROM {tn}".format(tn=self.table)
+
+        secure_conn.execute(s)
+        results = secure_conn.fetchall()
+        return list(results)
+
+    def check_record_exist(self, open_link):
+        try:
+            open_link.execute('SELECT 1 FROM {tn} LIMIT 1'.format(tn=self.table))
             open_link.fetchall()
-            self.log.append("Confirmed data in query .table={}".format(table))
+            self.log.append("Confirmed data in query .table={}".format(self.table))
             return True
 
         except:
-            self.log.append("Data is {}=None".format(table))
+            self.log.append("Data is {}=None".format(self.table))
             return False
 
     def validate_db_path(self):
