@@ -14,30 +14,41 @@ class DbController(object):
             'desc': 'ORDER BY {} DESC'.format('id'),  # SELECT * FROM tablename ORDER BY column DESC LIMIT 1;
         }
 
-    def connection_hub(self, var, name_columns, insert_values=""):
-        self.validate_db_path()
-        # create table if not exists TableName(col1 typ1, ..., colN typN)
+    def connection_hub(self, database_operator, name_columns, insert_values=""):
+        db_results = {}
+        '''
+        :param database_operator:
+        :param name_columns:
+        :param insert_values:
+        :return self.log:
+        '''
+
+        self.validate_db_path()  # create database file if not exists
 
         with sql3.connect(self.db) as conn:
             secure_conn = conn.cursor()
 
             if self.check_record_exist(secure_conn):  # Validate the requested table exist and there's one record
 
-                if var == "select":
-                    self.log.append(self.select_db(secure_conn, name_columns))
+                if database_operator == "select":
+                    results = self.select_db(secure_conn, name_columns)
+                    db_results['select'] = results
 
-                elif var == "insert":
-                    x, mes = self.insert_db(secure_conn, name_columns, insert_values)
+                elif database_operator == "insert":
+                    booleon, results = self.insert_db(secure_conn, name_columns, insert_values)
 
-                    if x:
-                        self.log.append("Successful = {}".format(mes))
+                    if booleon:
+                        db_results['insert'] = "SUCCESSFUL :: {}".format(results)
                         conn.commit()
                     else:
-                        print("{}".format(mes))
-                else:
-                    self.log.append("Database did nothing")
+                        db_results['insert'] = "FAILED :: {}".format(results)
 
-        return self.log
+                else:
+                    db_results['error'] = "Database did nothing"
+
+        db_results['log'] = self.log
+
+        return db_results
 
     def insert_db(self, secure_conn, columns="", values=""):
 

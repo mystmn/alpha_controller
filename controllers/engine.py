@@ -24,17 +24,17 @@ class Main(object):
         #  Only passes if completed.
         number, command, message = Display().welcome()
 
-        #logger.append("{}, {}".format(number, command))
+        # logger.append("{}, {}".format(number, command))
 
-        #logger.append("{}".format(NetworkScanner().route_gateway()))
+        # logger.append("{}".format(NetworkScanner().route_gateway()))
 
         DBC = DbController(config.cl_setup['Model'] + "main.db", "project")
 
-        # DBClog = DBC.connection_hub("select", ['name', 'deadline'])
-        # [logger.append(x) for x in DBClog]
+        DBC_SELECT = DBC.connection_hub("select", ['name', 'deadline'])
+        [logger.append({k: v}) for k, v in DBC_SELECT.items()]
 
-        DBClog = DBC.connection_hub("insert", ['name', 'description', 'deadline'], ["Jonah", "loves", "food"])
-        [logger.append(x) for x in DBClog]
+        DBC_INSERT = DBC.connection_hub("insert", ['name', 'description', 'deadline'], ["Nataly", "loves", "food"])
+        [logger.append({k: v}) for k, v in DBC_INSERT.items()]
 
         #  self.log saves entry to our file
         #  @ return [func, list]
