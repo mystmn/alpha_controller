@@ -3,18 +3,14 @@ import sqlite3 as sql3
 
 
 class DbController(object):
-    def __init__(self, db_file=None, table=None):
+    def __init__(self, db_file=None, model_schema=None):
         self.db = db_file
-        self.table = table
+        self.model = model_schema
+        self.table = model_schema['table_name']
+        self.fields = model_schema['fields']
         self.log = []
 
-    def config(self):
-        return {
-            'db': self.db,
-            'desc': 'ORDER BY {} DESC'.format('id'),  # SELECT * FROM tablename ORDER BY column DESC LIMIT 1;
-        }
-
-    def connection_hub(self, database_operator, name_columns, insert_values=""):
+    def hub(self, database_operator, name_columns="", insert_values=""):
         db_results = {}
         '''
         :param database_operator:
@@ -28,14 +24,15 @@ class DbController(object):
         with sql3.connect(self.db) as conn:
             secure_conn = conn.cursor()
 
-            if self.check_record_exist(secure_conn):  # Validate the requested table exist and there's one record
+            if self.check_record_exist_in_table(
+                    secure_conn):  # Validate the requested table exist and there's one record
 
                 if database_operator == "select":
                     results = self.select_db(secure_conn, name_columns)
                     db_results['select'] = results
 
                 elif database_operator == "insert":
-                    booleon, results = self.insert_db(secure_conn, name_columns, insert_values)
+                    booleon, results = self.insert_db(secure_conn, insert_values)
 
                     if booleon:
                         db_results['insert'] = "SUCCESSFUL :: {}".format(results)
@@ -46,21 +43,45 @@ class DbController(object):
                 else:
                     db_results['error'] = "Database did nothing"
 
+            else:
+                booleon, mes = self.create_table(secure_conn)
+
+                if booleon:
+                    db_results['insert'] = "Table creation SUCCESSFUL :: {}".format(mes)
+                else:
+                    db_results['insert'] = "FAILED :: {}".format(mes)
+
         db_results['log'] = self.log
 
         return db_results
 
-    def insert_db(self, secure_conn, columns="", values=""):
+    def create_table(self, secure_conn):
+        g = []
 
-        if not len(columns) is len(values):
+        for k, v in self.model.items():
+            for h in self.fields:
+                if k == h:
+                    string = "{} {}".format(k, v)
+                    g.append(string)
+
+        try:
+            x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(g))
+            secure_conn.execute(x)
+            return True, x
+        except:
+            return False, "Failed :: {} wasn't created".format(self.table)
+
+    def insert_db(self, secure_conn, values=""):
+
+        if not len(self.fields) is len(values):
             self.log.append("len(Columns) != len(values) for {}".format(self.table))
-            return False
+            return False, False
 
         try:
             s = "INSERT INTO {tn} (".format(tn=self.table)
             g, k = "", ""
 
-            for x in columns:
+            for x in self.fields:
                 g += "{},".format(x)
 
             s += g[:-1] + ") VALUES ("
@@ -72,8 +93,8 @@ class DbController(object):
             secure_conn.execute(s)
             final = True, s
 
-        except sql3.IntegrityError:
-            final = False, "TABLE={} requires a UNIQUE VALUE NOT ({})".format(self.table, values)
+        except sql3.IntegrityError as e:
+            final = False, "TABLE={} requires a UNIQUE VALUE :: Error={}".format(self.table, e)
 
         self.log.append(final)
 
@@ -93,7 +114,7 @@ class DbController(object):
         results = secure_conn.fetchall()
         return list(results)
 
-    def check_record_exist(self, open_link):
+    def check_record_exist_in_table(self, open_link):
         try:
             open_link.execute('SELECT 1 FROM {tn} LIMIT 1'.format(tn=self.table))
             open_link.fetchall()

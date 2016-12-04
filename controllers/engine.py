@@ -2,7 +2,7 @@ import config.main as config
 from helpers import logs
 from helpers.menu import Display
 from helpers.nmap import NetworkScanner
-from models.setup_config import DbController
+from models import setup_config as SC, project
 
 
 class Main(object):
@@ -28,13 +28,23 @@ class Main(object):
 
         # logger.append("{}".format(NetworkScanner().route_gateway()))
 
-        DBC = DbController(config.cl_setup['Model'] + "main.db", "project")
+        project_schema = project.Engine().db_schema()
 
-        DBC_SELECT = DBC.connection_hub("select", ['name', 'deadline'])
+        print(project_schema)
+        print(project_schema)
+        print(project_schema)
+
+        DBC = SC.DbController(config.cl_setup['Model'] + "main.db", project_schema)
+
+        DBC_SELECT = DBC.hub("select", ['name', 'deadline'])
         [logger.append({k: v}) for k, v in DBC_SELECT.items()]
 
-        DBC_INSERT = DBC.connection_hub("insert", ['name', 'description', 'deadline'], ["Nataly", "loves", "food"])
+        DBC_INSERT = DBC.hub("insert", "", ["catsx", "loves", "food"])
         [logger.append({k: v}) for k, v in DBC_INSERT.items()]
+
+        '''
+            Still need to create a model system that inserts a table schema creation if not exist
+        '''
 
         #  self.log saves entry to our file
         #  @ return [func, list]
@@ -47,3 +57,7 @@ class Main(object):
 
         #  Data Harvesting
         #  -> Sites
+
+
+if __name__ == "__main__":
+    pass
