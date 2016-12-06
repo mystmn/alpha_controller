@@ -28,28 +28,31 @@ class DbController(object):
                     secure_conn):  # Validate the requested table exist and there's one record
 
                 if database_operator == "select":
-                    results = self.select_db(secure_conn, name_columns)
-                    db_results['select'] = results
+                    db_results[database_operator] = self.select_db(secure_conn, name_columns)
 
                 elif database_operator == "insert":
                     booleon, results = self.insert_db(secure_conn, insert_values)
 
                     if booleon:
-                        db_results['insert'] = "SUCCESSFUL :: {}".format(results)
                         conn.commit()
+                        m = "SUCCESSFUL"
                     else:
-                        db_results['insert'] = "FAILED :: {}".format(results)
+                        m = "FAILED"
+
+                    db_results[database_operator] = "{} :: {}".format(m, results)
 
                 else:
-                    db_results['error'] = "Database did nothing"
+                    db_results['operator_status'] = "NOT found. Leaving after accomplishing nothing"
 
             else:
+                #  Table wasn't found. One needs to be created
                 booleon, mes = self.create_table(secure_conn)
 
                 if booleon:
-                    db_results['insert'] = "Table creation SUCCESSFUL :: {}".format(mes)
+
+                    db_results['table_creation'] = "Table was created :: {}".format(mes)
                 else:
-                    db_results['insert'] = "FAILED :: {}".format(mes)
+                    db_results['table_creation'] = "{}".format(mes)
 
         db_results['log'] = self.log
 
@@ -68,8 +71,9 @@ class DbController(object):
             x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(g))
             secure_conn.execute(x)
             return True, x
+
         except:
-            return False, "Failed :: {} wasn't created".format(self.table)
+            return False, "Error :: {} wasn't created".format(self.table)
 
     def insert_db(self, secure_conn, values=""):
 
@@ -115,14 +119,16 @@ class DbController(object):
         return list(results)
 
     def check_record_exist_in_table(self, open_link):
+        self.log.append("Does the requested table exist...")
         try:
             open_link.execute('SELECT 1 FROM {tn} LIMIT 1'.format(tn=self.table))
             open_link.fetchall()
-            self.log.append("Confirmed data in query .table={}".format(self.table))
+
+            self.log.append("...confirmed at least one record exist in 'table={}'".format(self.table))
             return True
 
         except:
-            self.log.append("Data is {}=None".format(self.table))
+            self.log.append("...no valid data exist '{}=None'".format(self.table))
             return False
 
     def validate_db_path(self):
@@ -130,13 +136,15 @@ class DbController(object):
         if not os.path.exists(self.db):
 
             try:
+                self.log.append('attempting to create database=\'{}\''.format(self.db))
                 os.chdir(self.db)
                 open(self.db, "w")
                 self.validate_db_file()
-                self.log.append("Created DB file {}".format(self.db))
+                self.log.append('creation of database=\'{}\' was SUCCESSFUL'.format(self.db))
 
             except:
-                self.log.append("Unable to create db file {}".format(self.db))
+                self.log.append('error occurred while attempting to create database=\'{}\''.format(self.db))
 
         else:
-            self.log.append("Confirmed file exist {}".format(self.db))
+            self.log.append('database=\'{}\' has been validated'.format(self.db))
+

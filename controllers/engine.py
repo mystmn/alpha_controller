@@ -39,7 +39,7 @@ class Main(object):
         DBC_SELECT = DBC.hub("select", ['name', 'deadline'])
         [logger.append({k: v}) for k, v in DBC_SELECT.items()]
 
-        DBC_INSERT = DBC.hub("insert", "", ["catsx", "loves", "food"])
+        DBC_INSERT = DBC.hub("insert", "", ["cows", "loves", "food"])
         [logger.append({k: v}) for k, v in DBC_INSERT.items()]
 
         '''
