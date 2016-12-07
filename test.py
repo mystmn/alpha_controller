@@ -1,8 +1,9 @@
 class TestEnv(object):
     instanceVar = 2
 
-    def __init__(self):
+    def __init__(self, var):
         self.class_name = __name__
+        self.var = var
         self.dictionary = {
             'a': "Name",
             'b': "Age",
@@ -24,13 +25,19 @@ class TestEnv(object):
         return calling(), TestEnv.calling()
 
     def added_number(self, x):
-        return x + "bob"
+        return x + "Bobby's World"
 
     def __getattr__(self, x):
 
         try:
-            if self.dictionary[x] == "Age":
-                return self.added_number(x)
+            if self.dictionary[x] == "Name":
+                return self.var + " " + self.added_number(x)
+
+            elif self.dictionary[x] == "Age":
+                return self.var + " " + "Pacman"
+
+            else:
+                return self.unknown(x)
         except:
             return "Not found"
 
@@ -43,9 +50,11 @@ def a():
     return
 
 
-TE = TestEnv()
-print(TestEnv().b)  # __getattr__
-print(TE.a)  # __getattr__
+TE = TestEnv("")
+print(TestEnv("TestB").b)  # __getattr__
+
+print("1) {}".format(TE.a))  # __getattr__
+print("2) {}".format(TE.b))  # __getattr__
 
 '''
 TestEnv.unknown("Settings Are good")

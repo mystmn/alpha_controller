@@ -1,8 +1,8 @@
-import config.main as config
+from config.main import CL
 from helpers import logs
 from helpers.menu import Display
 from helpers.nmap import NetworkScanner
-from models import setup_config as SC, project
+from models import project, main_engine, net_scan
 
 
 class Main(object):
@@ -14,12 +14,14 @@ class Main(object):
             'list': [],
         }
 
+        self.db = CL['Model'] + "main.db"
+
     def start(self):
         logger = []
 
-        print(config.cl_setup['ProjectName'])
-        print(config.cl_setup['ProjectPurpose'])
-        print(config.cl_setup['Model'])
+        print(CL['ProjectName'])
+        print(CL['ProjectPurpose'])
+        print(CL['Model'])
 
         #  Only passes if completed.
         number, command, message = Display().welcome()
@@ -28,19 +30,30 @@ class Main(object):
 
         # logger.append("{}".format(NetworkScanner().route_gateway()))
 
-        project_schema = project.Engine().db_schema()
+        '''
+        models running :: project, net_scan
+        '''
+        MEC = main_engine.Controller(self.db, project.schema())
 
-        print(project_schema)
-        print(project_schema)
-        print(project_schema)
+        MEC.db_select(['name', 'deadline'])
 
-        DBC = SC.DbController(config.cl_setup['Model'] + "main.db", project_schema)
+        MEC.db_insert(["Subs", "pies", "best food around"])
 
-        DBC_SELECT = DBC.hub("select", ['name', 'deadline'])
-        [logger.append({k: v}) for k, v in DBC_SELECT.items()]
+        MEC.db_termination()
 
-        DBC_INSERT = DBC.hub("insert", "", ["cows", "loves", "food"])
-        [logger.append({k: v}) for k, v in DBC_INSERT.items()]
+        logger.append(MEC.journal_logs())
+
+        NSC = main_engine.Controller(self.db, net_scan.schema())
+
+        logger.append(NSC.journal_logs())
+
+        NSC.db_insert([1, "cocsws142000", "location : WB227", "TIMESTAMP"])
+        logger.append(NSC.journal_logs())
+
+        NSC.db_termination()
+
+        logger.append(NSC.journal_logs())
+
 
         '''
             Still need to create a model system that inserts a table schema creation if not exist

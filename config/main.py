@@ -4,7 +4,7 @@ from helpers import cmd
 
 cmd.clear()
 
-cl_setup = {
+CL = {
     'ProjectName': "** Project Master Blaster has begun ** ",
     'ProjectPurpose': "** This script was created to scan a network for information **",
     'Schedule': False,
@@ -23,10 +23,10 @@ def dir_checker(x):
     if type(x) is list:
         for each_dir in x:
 
-            if each_dir in cl_setup:
+            if each_dir in CL:
                 try:
-                    if not os.path.isdir(cl_setup[each_dir]):
-                        print("Doesn't exist = {}".format(cl_setup[each_dir]))
+                    if not os.path.isdir(CL[each_dir]):
+                        print("Doesn't exist = {}".format(CL[each_dir]))
                         print("fpath={}, func={}".format(IS[0][1], IS[0][3]))
 
                 except IOError as e:

@@ -1,10 +1,11 @@
 def schema():
     return {
-        'table_name': 'project',
-        'fields': ['name', 'description', 'deadline'],
-        'name': 'CHARACTER(20) UNIQUE',
+        'table_name': 'nmapScan',
+        'fields': ('id', 'device', 'description', 'LastModifiedTime'),
+        'id': 'INT',
+        'device': 'CHARACTER(20) UNIQUE',
         'description': 'CHARACTER(75)',
-        'deadline': 'CHARACTER(20)',
+        'LastModifiedTime': 'CURRENT_TIMESTAMP',
     }
 
 
