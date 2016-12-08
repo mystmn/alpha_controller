@@ -6,9 +6,10 @@ class Controller(object):
 
     def __init__(self, db_file=None, model_schema=None):
         self.db = db_file
-        self.model = model_schema
-        self.table = model_schema['table_name']
-        self.fields = model_schema['fields']
+        self.model = model_schema['schema']
+        self.table = self.model['table_name']
+        self.fields = self.model['fields']
+        self.blacklist = model_schema['filter-out']
         self.log = []
 
         ''' Mandatory Functions'''
@@ -53,15 +54,16 @@ class Controller(object):
         returns = ":: data inserted = "
         conn = self.db_connection()
 
-        if not len(self.fields) is len(values):
-            self.log.append("FAILURE" + returns + "{}".format("insert data != columns"))
+        #  Needs to add blacklist for DB INSERT
+
 
         try:
             s = "INSERT INTO {tn} (".format(tn=self.table)
             g, k = "", ""
 
             for x in self.fields:
-                g += "{},".format(x)
+                if x not in self.blacklist:
+                    g += "{},".format(x)
 
             s += g[:-1] + ") VALUES ("
 
@@ -69,6 +71,7 @@ class Controller(object):
                 k += "'{}',".format(v)
 
             s += k[:-1] + ")"
+
             conn.execute(s)
             conn.commit()
             self.log.append("SUCCESS" + returns + "{}".format(s))
@@ -98,16 +101,17 @@ class Controller(object):
 
     def create_table(self):
         returns = "::table=\'{}\' has been created".format(self.table)
-        g = []
+        column_titles = []
 
-        for k, v in self.model.items():
-            for h in self.fields:
+        #  Sort via the order of list(fields)
+        for h in self.fields:
+            for k, v in self.model.items():
                 if k == h:
                     string = "{} {}".format(k, v)
-                    g.append(string)
+                    column_titles.append(string)
 
         try:
-            x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(g))
+            x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(column_titles))
             self.db_connection().execute(x)
             self.log.append("SUCCESS" + returns)
 

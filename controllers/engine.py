@@ -1,3 +1,4 @@
+import random
 from config.main import CL
 from helpers import logs
 from helpers.menu import Display
@@ -33,21 +34,21 @@ class Main(object):
         '''
         models running :: project, net_scan
         '''
-        MEC = main_engine.Controller(self.db, project.schema())
+        #MEC = main_engine.Controller(self.db, project.schema())
 
-        MEC.db_select(['name', 'deadline'])
+        #MEC.db_select(['name', 'deadline'])
 
-        MEC.db_insert(["Subs", "pies", "best food around"])
+        #MEC.db_insert(["Subs", "pies", "best food around"])
 
-        MEC.db_termination()
+        #MEC.db_termination()
 
-        logger.append(MEC.journal_logs())
+        #logger.append(MEC.journal_logs())
 
         NSC = main_engine.Controller(self.db, net_scan.schema())
 
         logger.append(NSC.journal_logs())
-
-        NSC.db_insert([1, "cocsws142000", "location : WB227", "TIMESTAMP"])
+        name = "cocsws{}".format(random.randrange(100, 999999))
+        NSC.db_insert([name, "location : WB227"])
         logger.append(NSC.journal_logs())
 
         NSC.db_termination()

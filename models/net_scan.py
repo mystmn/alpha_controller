@@ -1,12 +1,16 @@
 def schema():
-    return {
-        'table_name': 'nmapScan',
-        'fields': ('id', 'device', 'description', 'LastModifiedTime'),
-        'id': 'INT',
-        'device': 'CHARACTER(20) UNIQUE',
-        'description': 'CHARACTER(75)',
-        'LastModifiedTime': 'CURRENT_TIMESTAMP',
-    }
+    db = dict()
+    #  Keep in mind [fields] creates the columns based on order of list()
+    db['schema'] = {
+                       'table_name': 'nmap',
+                       'fields': ('id', 'device', 'description', 'LastModifiedTime'),
+                       'id': 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL',
+                       'device': 'CHARACTER(20)',
+                       'description': 'CHARACTER(75)',
+                       'LastModifiedTime': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL',
+                   }
+    db['filter-out'] = ['id', 'LastModifiedTime']
+    return db
 
 
 #  self.x = ['PRIMARY KEY', 'UNIQUE']
