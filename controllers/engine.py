@@ -27,9 +27,11 @@ class Main(object):
         #  Only passes if completed.
         number, command, message = Display().welcome()
 
-        # logger.append("{}, {}".format(number, command))
+        logger.append("{}, {}".format(number, command))
 
-        # logger.append("{}".format(NetworkScanner().route_gateway()))
+        log, results = NetworkScanner().central_hub()
+
+        logger.append(log)
 
         '''
         models running :: project, net_scan
@@ -46,19 +48,15 @@ class Main(object):
 
         NSC = main_engine.Controller(self.db, net_scan.schema())
 
-        logger.append(NSC.journal_logs())
+        # logger.append(NSC.journal_logs())
+
         name = "cocsws{}".format(random.randrange(100, 999999))
         NSC.db_insert([name, "location : WB227"])
         logger.append(NSC.journal_logs())
 
         NSC.db_termination()
 
-        logger.append(NSC.journal_logs())
-
-
-        '''
-            Still need to create a model system that inserts a table schema creation if not exist
-        '''
+        # logger.append(NSC.journal_logs())
 
         #  self.log saves entry to our file
         #  @ return [func, list]

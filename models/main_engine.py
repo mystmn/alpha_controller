@@ -3,7 +3,6 @@ import sqlite3 as sql3
 
 
 class Controller(object):
-
     def __init__(self, db_file=None, model_schema=None):
         self.db = db_file
         self.model = model_schema['schema']
@@ -54,9 +53,6 @@ class Controller(object):
         returns = ":: data inserted = "
         conn = self.db_connection()
 
-        #  Needs to add blacklist for DB INSERT
-
-
         try:
             s = "INSERT INTO {tn} (".format(tn=self.table)
             g, k = "", ""
@@ -91,9 +87,9 @@ class Controller(object):
                 self.log.append("SUCCESS" + returns)
                 self.validate_db_path()
 
-            except:
-                self.log.append("FAILURE" + returns)
-                exit("Need to add error catcher")
+            except sql3.OperationalError as e:
+                self.log.append("FAILURE" + " :: {}".format(e))
+
         else:
             self.log.append("SUCCESS" + returns)
 
@@ -101,23 +97,23 @@ class Controller(object):
 
     def create_table(self):
         returns = "::table=\'{}\' has been created".format(self.table)
-        column_titles = []
+        columns = []
 
         #  Sort via the order of list(fields)
         for h in self.fields:
             for k, v in self.model.items():
                 if k == h:
                     string = "{} {}".format(k, v)
-                    column_titles.append(string)
+                    columns.append(string)
 
         try:
-            x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(column_titles))
+            x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(columns))
             self.db_connection().execute(x)
             self.log.append("SUCCESS" + returns)
 
         except:
             self.log.append("FAILURE" + returns)
-            exit("Need to add error catcher")
+            exit("Need to add error catcher 'create_table'")
 
     def check_record_exist_in_table(self):
         returns = ":: DATA exist for table=\'{}\'".format(self.table)

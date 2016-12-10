@@ -9,6 +9,7 @@ def schema():
                        'description': 'CHARACTER(75)',
                        'LastModifiedTime': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL',
                    }
+    #  Blacklist item's that are automatised by SQLite3
     db['filter-out'] = ['id', 'LastModifiedTime']
     return db
 

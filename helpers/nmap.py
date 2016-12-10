@@ -4,25 +4,22 @@ from helpers.cmd import Terminal, clear
 
 
 class NetworkScanner(object):
-    @staticmethod
-    def multi_proc_ping(x=()):
-        '''
-            Uses OS.System to ping a count of 2
-            :return string(list_r)
-        '''
-        list_r = []
+    def __init__(self):
+        self.commands = {
+            'ping': "ping -c 2 ",
+        }
 
-        response = os.system("ping -c 2 " + x)
+        self.file = {
+            'name': "nmap.txt",
+            'permission': 'w',
+        }
 
-        if not bool(response):
-            list_r.append(x)
+        self.black_list_connections = [
+            "0.0.0.0"
+        ]
+        self.log = []
 
-        return str(list_r)
-
-    def route_gateway(self, test=False):
-        f_name = "nmap.txt"
-        f_permissions = "w"
-
+    def central_hub(self, test=False):
         '''
         :var test
 
@@ -32,26 +29,38 @@ class NetworkScanner(object):
         '''
 
         tc = Terminal.linux(['route', '-n'])
+        self.log.append("...ran 'route -n' ...")
 
-        td = Terminal.decode(tc)
-
-        rl = self.route_layout(td)
+        rl = self.results_text_layout(Terminal.decode(tc))
+        self.log.append("...filtered through the list...")
 
         cores = self.route_gateway_count()
 
-        thread_results = cores.map(self.multi_proc_ping, [blank for blank in rl])
+        thread_results = cores.map(self.command_run, [blank for blank in rl])
 
         clear()
 
         route_gateway_done = list(filter(None, thread_results))
 
         if test:
-            with open(f_name, f_permissions, newline="\n") as f:
+            with open(self.file['name'], self.file['permission'], newline="\n") as f:
                 f.write("{}".format(route_gateway_done))
+                self.log.append("...list has been saved to file = {}".format(self.file['name']))
 
             f.close()
 
-        return route_gateway_done
+        return self.log, route_gateway_done
+
+    def command_run(self, host_up_or_down=()):
+        '''
+            Uses OS.System to ping a count of 2
+            :return string(list_r)
+        '''
+        if host_up_or_down not in self.black_list_connections:
+
+            if not bool(os.system(self.commands['ping'] + host_up_or_down)):
+                self.log.append("{} host is up".format(host_up_or_down))
+                return str(host_up_or_down)
 
     @staticmethod
     def route_gateway_count():
@@ -61,7 +70,7 @@ class NetworkScanner(object):
         return multiprocessing.dummy.Pool(core_count)
 
     @staticmethod
-    def route_layout(x):
+    def results_text_layout(x):
         '''
             Call $route -n
             Remove header range()...
@@ -100,4 +109,4 @@ class NetworkScanner(object):
 if __name__ == "__main__":
     NS = NetworkScanner()
 
-    print(NS.route_gateway(True))
+    print(NS.central_hub(True))
