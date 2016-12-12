@@ -17,6 +17,9 @@ class Terminal(object):
             error = Terminal.is_method() + ".linux"
             exit("No var set = {}".format(error))
 
+        if len(x) <= 1:
+            exit("Command needs to be a list")
+
         x = subprocess.Popen(x, stdout=subprocess.PIPE)
 
         return x.communicate()

@@ -39,7 +39,7 @@ def search_replace_list(line, x):
     return new_line
 
 
-def remove_range_append(x=(), num=()):
+def remove_range_append(x="", num=""):
     ''' Take list, skip a range, and return list()
         :return list(s)
     '''
@@ -53,7 +53,4 @@ def remove_range_append(x=(), num=()):
                     pass
                 else:
                     s.append(v)
-    else:
-        pass
-
     return list(s)

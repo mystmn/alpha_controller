@@ -1,10 +1,10 @@
 import os, multiprocessing.dummy
-import helpers.misc as misc
-from helpers.cmd import Terminal, clear
+from helpers import cmd, menu, misc
 
 
 class NetworkScanner(object):
     def __init__(self):
+        self.log = []
         self.commands = {
             'ping': "ping -c 2 ",
         }
@@ -17,9 +17,46 @@ class NetworkScanner(object):
         self.black_list_connections = [
             "0.0.0.0"
         ]
-        self.log = []
+        self.menu = {
+            'automatic': {
+                'mes': 'Would you like to run this automatically?',
+                'reply': "Running automatically...sit back and relax",
+                'com': ['route', '-n'],
+            },
+            'manually': {
+                'mes': 'Shall we run this manually?',
+                'reply': 'You have a choice of options',
+                'com': 'commands here',
+            }
+        }
 
-    def central_hub(self, test=False):
+    def terminal_display(self, x=True, mes=""):
+        res = {}
+        user_input = ""
+
+        if not x:
+            cmd.clear()
+            print(mes)
+
+        listed_options = menu.display_options(self.menu)
+
+        try:
+            user_input = int(input("> "))
+        except:
+            mes = " ** Answer needs to be an int.. **"
+            return self.terminal_display(False, mes)
+
+        [res.update(each) for each in listed_options]
+
+        if user_input in res:
+            print(res[user_input])
+            return res[user_input]
+        else:
+            mes = " ** That choice isn't optional.. **"
+
+        return self.terminal_display(False, mes)
+
+    def central_hub(self, command, test=True):
         '''
         :var test
 
@@ -28,17 +65,17 @@ class NetworkScanner(object):
         :raises None
         '''
 
-        tc = Terminal.linux(['route', '-n'])
-        self.log.append("...ran 'route -n' ...")
+        tc = cmd.Terminal.linux(command)
+        self.log.append("...ran {} ...".format(tc))
 
-        rl = self.results_text_layout(Terminal.decode(tc))
+        rl = self.results_text_layout(cmd.Terminal.decode(tc))
         self.log.append("...filtered through the list...")
 
         cores = self.route_gateway_count()
 
         thread_results = cores.map(self.command_run, [blank for blank in rl])
 
-        clear()
+        cmd.clear()
 
         route_gateway_done = list(filter(None, thread_results))
 

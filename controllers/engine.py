@@ -1,8 +1,7 @@
 import random
 from config.main import CL
-from helpers import logs
-from helpers.menu import Display
-from helpers.nmap import NetworkScanner
+from helpers import logs, menu
+from helpers import nmap
 from models import project, main_engine, net_scan
 
 
@@ -25,11 +24,10 @@ class Main(object):
         print(CL['Model'])
 
         #  Only passes if completed.
-        number, command, message = Display().welcome()
+        NSC = nmap.NetworkScanner()
+        item_given = NSC.terminal_display()
 
-        logger.append("{}, {}".format(number, command))
-
-        log, results = NetworkScanner().central_hub()
+        log, results = NSC.central_hub(item_given)
 
         logger.append(log)
 
