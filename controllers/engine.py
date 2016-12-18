@@ -25,16 +25,25 @@ class Main(object):
 
         #  Only passes if completed.
         NSC = nmap.NetworkScanner()
+
         item_given = NSC.terminal_display()
 
         log, results = NSC.central_hub(item_given)
 
         logger.append(log)
 
+        NSC = main_engine.Controller(self.db, net_scan.schema())
+
+        name = "cocsws{}".format(random.randrange(100, 999999))
+        NSC.db_insert([name, "location : WB227"])
+        logger.append(NSC.journal_logs())
+
+        NSC.db_termination()
+
         '''
         models running :: project, net_scan
         '''
-        #MEC = main_engine.Controller(self.db, project.schema())
+        # MEC = main_engine.Controller(self.db, project.schema())
 
         #MEC.db_select(['name', 'deadline'])
 
@@ -44,15 +53,6 @@ class Main(object):
 
         #logger.append(MEC.journal_logs())
 
-        NSC = main_engine.Controller(self.db, net_scan.schema())
-
-        # logger.append(NSC.journal_logs())
-
-        name = "cocsws{}".format(random.randrange(100, 999999))
-        NSC.db_insert([name, "location : WB227"])
-        logger.append(NSC.journal_logs())
-
-        NSC.db_termination()
 
         # logger.append(NSC.journal_logs())
 

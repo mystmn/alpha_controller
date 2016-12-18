@@ -1,4 +1,4 @@
-import os, multiprocessing.dummy
+import os, threading
 from helpers import cmd, menu, misc
 
 
@@ -17,18 +17,19 @@ class NetworkScanner(object):
         self.black_list_connections = [
             "0.0.0.0"
         ]
-        self.menu = {
-            'automatic': {
+
+        self.menu = (
+            {
                 'mes': 'Would you like to run this automatically?',
                 'reply': "Running automatically...sit back and relax",
                 'com': ['route', '-n'],
             },
-            'manually': {
+            {
                 'mes': 'Shall we run this manually?',
                 'reply': 'You have a choice of options',
                 'com': 'commands here',
             }
-        }
+        )
 
     def terminal_display(self, x=True, mes=""):
         res = {}
@@ -37,26 +38,30 @@ class NetworkScanner(object):
         if not x:
             cmd.clear()
             print(mes)
+            self.log.append(mes)
 
         listed_options = menu.display_options(self.menu)
 
         try:
             user_input = int(input("> "))
+            self.log.append("..asked the user what command to..")
+
         except:
             mes = " ** Answer needs to be an int.. **"
+            self.log.append("error returning :: {}".format(mes))
             return self.terminal_display(False, mes)
 
+        # Let's turn this sucker from a list to a dict
         [res.update(each) for each in listed_options]
 
         if user_input in res:
-            print(res[user_input])
             return res[user_input]
         else:
-            mes = " ** That choice isn't optional.. **"
+            mes = " ** That choice isn't optional.. ** "
 
         return self.terminal_display(False, mes)
 
-    def central_hub(self, command, test=True):
+    def central_hub(self, command, test=False):
         '''
         :var test
 
@@ -65,46 +70,30 @@ class NetworkScanner(object):
         :raises None
         '''
 
-        tc = cmd.Terminal.linux(command)
-        self.log.append("...ran {} ...".format(tc))
+        #  fails // boolean, results = cmd.Terminal().linux(command)
 
-        rl = self.results_text_layout(cmd.Terminal.decode(tc))
-        self.log.append("...filtered through the list...")
+        boolean, results = cmd.Terminal().linux(command)
 
-        cores = self.route_gateway_count()
+        if not boolean:
+            self.log.append("False hope was placed in the terminal")
+            exit(results)
 
-        thread_results = cores.map(self.command_run, [blank for blank in rl])
+        scrub_results = self.results_text_layout(results)
 
         cmd.clear()
 
-        route_gateway_done = list(filter(None, thread_results))
+        pressing = misc.filter_out_string(self.black_list_connections, scrub_results)
+
+        route_gateway_done = list(filter(None, pressing))
 
         if test:
+            self.log.append("...printing test results in :: {}".format(self.file['name']))
+
             with open(self.file['name'], self.file['permission'], newline="\n") as f:
                 f.write("{}".format(route_gateway_done))
-                self.log.append("...list has been saved to file = {}".format(self.file['name']))
-
             f.close()
 
         return self.log, route_gateway_done
-
-    def command_run(self, host_up_or_down=()):
-        '''
-            Uses OS.System to ping a count of 2
-            :return string(list_r)
-        '''
-        if host_up_or_down not in self.black_list_connections:
-
-            if not bool(os.system(self.commands['ping'] + host_up_or_down)):
-                self.log.append("{} host is up".format(host_up_or_down))
-                return str(host_up_or_down)
-
-    @staticmethod
-    def route_gateway_count():
-
-        core_count = 4 * multiprocessing.cpu_count()
-
-        return multiprocessing.dummy.Pool(core_count)
 
     @staticmethod
     def results_text_layout(x):
@@ -135,10 +124,8 @@ class NetworkScanner(object):
                 if num >= row:  # No need to gather Row Header
                     row_start_pos.append(num + exception_column)
 
-            for e in row_start_pos:
-
-                if num == e:  # IS list[position] == exception_column + row
-                    list_exception_column.append(each)
+            if [num == e for e in row_start_pos]:
+                list_exception_column.append(each)
 
         return set(list_exception_column)
 

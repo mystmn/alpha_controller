@@ -7,23 +7,29 @@ def clear():
 
 
 class Terminal(object):
+
     @classmethod
     def is_method(cls):
         return cls.__name__
 
-    @staticmethod
-    def linux(x=()):
+    def linux(self, x=()):
+
         if x is ():
             error = Terminal.is_method() + ".linux"
-            exit("No var set = {}".format(error))
+            exit("No var set = {}...exiting".format(error))
 
         if len(x) <= 1:
             exit("Command needs to be a list")
 
-        x = subprocess.Popen(x, stdout=subprocess.PIPE)
+        try:
+            x = subprocess.Popen(x, stdout=subprocess.PIPE)
 
-        return x.communicate()
+            return True, self.decoder(x.communicate())
+
+        except IOError as e:
+            error = Terminal.is_method() + ".linux"
+            return False, "Major error occurred :: {} - {}".format(error, e)
 
     @staticmethod
-    def decode(x):
+    def decoder(x):
         return list(filter(None, x[0].decode().split(" ")))

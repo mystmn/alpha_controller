@@ -1,18 +1,18 @@
-def display_options(dictionary_with_list=""):
-    dal = dictionary_with_list
+def display_options(set_with_list=""):
     i = 0
     x = []
+    print(type(set_with_list))
 
-    if isinstance(dal, dict):
+    if isinstance(set_with_list, tuple):
         warning = ["Please pick from the following"]
         [print("{}".format(dal)) for dal in warning]
 
-        for k, v in dal.items():
+        i = 0
+        for each in set_with_list:
             i += 1
-            x.append({i: v['com']})
-            print("{}) {}".format(int(i), v['mes']))
-
+            print("{}) {}".format(int(i), each['mes']))
+            x.append({i: each['com']})
         return x
 
     else:
-        exit("The menu list needs to be dict()[list]")
+        exit("The menu list needs to be tuple()[list]")

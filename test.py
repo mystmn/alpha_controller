@@ -1,3 +1,6 @@
+import threading, random
+
+
 class TestEnv(object):
     instanceVar = 2
 
@@ -42,19 +45,31 @@ class TestEnv(object):
             return "Not found"
 
 
-def calling(*args):
-    print("And go {}!".format(args))
+def calling():
+    print("And go Paul!")
+    a = []
+    i = 0
+    for each in range(0, 10):
+        s = random.randint(1, 1000)
+        i += 1
+        if i < 5:
+            a.append(s)
+    print(a)
 
 
-def a():
-    return
+def a(list):
+    [print(x) for x in list]
 
 
 TE = TestEnv("")
-print(TestEnv("TestB").b)  # __getattr__
+#  works / print(TestEnv("TestB").b)  # __getattr__
 
-print("1) {}".format(TE.a))  # __getattr__
-print("2) {}".format(TE.b))  # __getattr__
+#  works / print("1) {}".format(TE.a))  # __getattr__
+#  works / print("2) {}".format(TE.b))  # __getattr__
+
+#  t = threading.Thread(target=calling(2)) # Works just fine
+t = threading.Thread(calling())
+t.start()
 
 '''
 TestEnv.unknown("Settings Are good")

@@ -1,5 +1,6 @@
-import os
+import os, errno
 import sqlite3 as sql3
+
 
 
 class Controller(object):
@@ -78,22 +79,21 @@ class Controller(object):
     def validate_db_path(self):
         returns = "::db_path=\'{}\' exist already".format(self.db)
 
-        if not os.path.exists(self.db):
+        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
 
-            try:
-                os.chdir(self.db)
-                open(self.db, "w")
-                self.validate_db_file()
-                self.log.append("SUCCESS" + returns)
-                self.validate_db_path()
+        try:
+            creation = sql3.connect(r"{}".format(self.db))
+            file_handle = os.open(self.db, flags)
+            self.log.append("DB file was created {} {}".format(self.db,  returns))
 
-            except sql3.OperationalError as e:
-                self.log.append("FAILURE" + " :: {}".format(e))
+        except OSError as e:
+            if e.errno == errno.EEXIST:  # Failed as the file already exists.
+                self.log.append("File already exist" + returns)
 
-        else:
-            self.log.append("SUCCESS" + returns)
-
-            self.create_table()
+                self.create_table()
+                pass
+            else:  # Something unexpected went wrong so reraise the exception.
+                self.log.append("FAILURE in db_file creation" + " :: {}".format(e))
 
     def create_table(self):
         returns = "::table=\'{}\' has been created".format(self.table)

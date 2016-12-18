@@ -54,3 +54,23 @@ def remove_range_append(x="", num=""):
                 else:
                     s.append(v)
     return list(s)
+
+
+def convert_to_list(listing):
+    a = []
+
+    [a.append(x) for x in listing]
+
+    return a
+
+
+def filter_out_string(string, _set):
+    a = []
+    if isinstance(_set, set):
+        for e in _set:
+            if e not in string:
+                a.append(e)
+
+        return list(a)
+
+    exit("Requirement :: {} != list()".format(type(_set)))
