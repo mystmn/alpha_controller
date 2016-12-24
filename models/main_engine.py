@@ -2,7 +2,6 @@ import os, errno
 import sqlite3 as sql3
 
 
-
 class Controller(object):
     def __init__(self, db_file=None, model_schema=None):
         self.db = db_file
@@ -84,7 +83,7 @@ class Controller(object):
         try:
             creation = sql3.connect(r"{}".format(self.db))
             file_handle = os.open(self.db, flags)
-            self.log.append("DB file was created {} {}".format(self.db,  returns))
+            self.log.append("DB file was created {} {}".format(self.db, returns))
 
         except OSError as e:
             if e.errno == errno.EEXIST:  # Failed as the file already exists.

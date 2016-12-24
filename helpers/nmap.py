@@ -70,8 +70,6 @@ class NetworkScanner(object):
         :raises None
         '''
 
-        #  fails // boolean, results = cmd.Terminal().linux(command)
-
         boolean, results = cmd.Terminal().linux(command)
 
         if not boolean:

@@ -1,5 +1,5 @@
 import random
-from config.main import CL
+from config import core
 from helpers import logs, menu
 from helpers import nmap
 from models import project, main_engine, net_scan
@@ -13,26 +13,34 @@ class Main(object):
                 __name__ + "_start",
             'list': [],
         }
-
-        self.db = CL['Model'] + "main.db"
+        self.core_files = core().valid_paths()
 
     def start(self):
         logger = []
 
-        print(CL['ProjectName'])
-        print(CL['ProjectPurpose'])
-        print(CL['Model'])
+        print(self.core_files['tag']['ProjectName'])
+        print(self.core_files['tag']['ProjectPurpose'])
+        print(self.core_files['Model'])
 
-        #  Only passes if completed.
+        '''
+            Display Menu Options
+        '''
         NSC = nmap.NetworkScanner()
 
         item_given = NSC.terminal_display()
 
+        '''
+            Return route -n results
+        '''
         log, results = NSC.central_hub(item_given)
 
         logger.append(log)
 
-        NSC = main_engine.Controller(self.db, net_scan.schema())
+        '''
+            Accessing DB
+        '''
+        NSC = main_engine.Controller(self.core_files['Model'] + "main.db", net_scan.schema())
+
 
         name = "cocsws{}".format(random.randrange(100, 999999))
         NSC.db_insert([name, "location : WB227"])
@@ -71,3 +79,5 @@ class Main(object):
 
 if __name__ == "__main__":
     pass
+else:
+    Main().start()

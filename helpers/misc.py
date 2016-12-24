@@ -20,9 +20,10 @@ def search_replace_list(line, x):
     new_line = []
     i = 0
 
+    #  if x in str([words for words in line]):
+
     for words in line:
         i += 1
-
         if x in str(words):
             found_x = words.find(x)
 
@@ -46,13 +47,9 @@ def remove_range_append(x="", num=""):
     s = []
 
     if isinstance(x, list):
-        for each in x:
-            for k, v in each.items():
+        #  [s.append(v) for k, v in each.items if not k <= num]
+        [[s.append(v) for k, v in each.items() if not k <= num] for each in x]
 
-                if k <= num:  # Header is k[0:3]
-                    pass
-                else:
-                    s.append(v)
     return list(s)
 
 
@@ -64,13 +61,11 @@ def convert_to_list(listing):
     return a
 
 
-def filter_out_string(string, _set):
+def filter_out_string(string="", _set=""):
     a = []
-    if isinstance(_set, set):
-        for e in _set:
-            if e not in string:
-                a.append(e)
 
-        return list(a)
+    if isinstance(_set, set):
+        if [a.append(e) for e in _set] not in string:
+            return list(a)
 
     exit("Requirement :: {} != list()".format(type(_set)))

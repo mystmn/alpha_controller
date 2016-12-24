@@ -1,9 +1,9 @@
-from controllers.engine import Main
+from controllers import Engine
 
-c = Main()
-c.start()
 
-# -->  Model can only be run within the Controller
+class MyApp(object):
+    Engine
+
 
 if __name__ == '__main__':
-    pass
+    MyApp()

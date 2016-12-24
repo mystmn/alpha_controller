@@ -14,6 +14,10 @@ class Terminal(object):
 
     def linux(self, x=()):
 
+        #  exit("No var set = {} linux ...exiting".format(Terminal.is_method()) if x is () else '')
+
+        #  exit("Command needs to be a list" if len(x) <= 1 else '')
+
         if x is ():
             error = Terminal.is_method() + ".linux"
             exit("No var set = {}...exiting".format(error))
