@@ -1,10 +1,10 @@
 def display_options(set_with_list=""):
     i = 0
     x = []
-    print(type(set_with_list))
+    warning = ["Please pick from the following"]
 
     if isinstance(set_with_list, tuple):
-        warning = ["Please pick from the following"]
+
         [print("{}".format(dal)) for dal in warning]
 
         i = 0
@@ -15,4 +15,5 @@ def display_options(set_with_list=""):
         return x
 
     else:
+        f = __file__
         exit("The menu list needs to be tuple()[list]")

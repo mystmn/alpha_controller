@@ -7,12 +7,6 @@ from models import project, main_engine, net_scan
 
 class Main(object):
     def __init__(self):
-        #  helpers.logs.[info, debug, critical] RETURN ['func', 'message']
-        self.log = {
-            'func':
-                __name__ + "_start",
-            'list': [],
-        }
         self.core_files = core().valid_paths()
 
     def start(self):
@@ -25,6 +19,7 @@ class Main(object):
         '''
             Display Menu Options
         '''
+
         NSC = nmap.NetworkScanner()
 
         item_given = NSC.terminal_display()
@@ -32,15 +27,14 @@ class Main(object):
         '''
             Return route -n results
         '''
-        log, results = NSC.central_hub(item_given)
+        network_log, results = NSC.central_hub(item_given)
+        logs.Scribe(dict, network_log)
 
-        logger.append(log)
 
         '''
             Accessing DB
         '''
         NSC = main_engine.Controller(self.core_files['Model'] + "main.db", net_scan.schema())
-
 
         name = "cocsws{}".format(random.randrange(100, 999999))
         NSC.db_insert([name, "location : WB227"])
@@ -53,25 +47,14 @@ class Main(object):
         '''
         # MEC = main_engine.Controller(self.db, project.schema())
 
-        #MEC.db_select(['name', 'deadline'])
+        # MEC.db_select(['name', 'deadline'])
 
-        #MEC.db_insert(["Subs", "pies", "best food around"])
+        # MEC.db_insert(["Subs", "pies", "best food around"])
 
-        #MEC.db_termination()
-
-        #logger.append(MEC.journal_logs())
-
-
-        # logger.append(NSC.journal_logs())
-
-        #  self.log saves entry to our file
-        #  @ return [func, list]
-        self.log['list'] = logger
-        logs.info(self.log)
+        # MEC.db_termination()
 
         #  Commands to send out among the network to gather
         #  -> Models, Names, IP
-
 
         #  Data Harvesting
         #  -> Sites
@@ -79,5 +62,6 @@ class Main(object):
 
 if __name__ == "__main__":
     pass
+
 else:
     Main().start()

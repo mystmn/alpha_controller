@@ -68,4 +68,38 @@ def filter_out_string(string="", _set=""):
         if [a.append(e) for e in _set] not in string:
             return list(a)
 
-    exit("Requirement :: {} != list()".format(type(_set)))
+    exit("Requirements not met {} :: != list()".format(__name__, type(_set)))
+
+
+def results_text_layout(x):
+    '''
+        Call $route -n
+        Remove header range()...
+        Create list with thread_results...
+        find() row starts from \n and...
+        :return set(list_exception_column)
+    '''
+
+    header_stop = 4
+    row_start_pos = []
+    row = 8
+    exception_column = 1
+    list_exception_column = []
+
+    markers_dict = search_replace_list(x, "\n")
+
+    #  [{i: value}, {i: value}...]
+    #  returns [value, value...]
+    marker_list = remove_range_append(markers_dict, header_stop)
+
+    for num, each in enumerate(marker_list):
+
+        if num % row == 0:  # find the row starting position
+
+            if num >= row:  # No need to gather Row Header
+                row_start_pos.append(num + exception_column)
+
+        if [num == e for e in row_start_pos]:
+            list_exception_column.append(each)
+
+    return set(list_exception_column)
