@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, glob
 
 
 def cur_function():
@@ -103,3 +103,18 @@ def results_text_layout(x):
             list_exception_column.append(each)
 
     return set(list_exception_column)
+
+
+def read_folder_files(folder_path, pattern, black_list=["__init__"]):
+    grab = glob.glob("{}*.{}".format(folder_path, pattern))
+    dot = "."
+    gather = []
+
+    for x in grab:
+        s = x.rindex('/') + 1
+        g = x.replace(dot + pattern, "")
+
+        if g[s:] not in black_list:
+            gather.append(g[s:])
+
+    return gather

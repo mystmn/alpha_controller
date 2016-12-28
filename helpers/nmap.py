@@ -5,6 +5,7 @@ class NetworkScanner(object):
     def __init__(self):
         self.self_name = type(self).__name__
         self.log = {100: [], 200: [], 300: []}
+        self.test = False
 
         self.commands = {
             'ping': "ping -c 2 ",
@@ -69,7 +70,8 @@ class NetworkScanner(object):
             print(mes)
             return self.terminal_display()
 
-    def central_hub(self, command, test=False):
+    def central_hub(self):
+        command = self.terminal_display()
 
         boolean, results = cmd.Terminal().linux(command)
 
@@ -84,7 +86,7 @@ class NetworkScanner(object):
         route_gateway_done = [list(filter(None, x)) for x in
                               misc.filter_out_string(self.black_list_connections, scrub_results)]
 
-        if test:
+        if self.test:
             self.log[200].append("...printing test results in :: {}".format(self.file['name']))
 
             with open(self.file['name'], self.file['permission'], newline="\n") as f:
@@ -95,8 +97,5 @@ class NetworkScanner(object):
 
 
 if __name__ == "__main__":
-    NS = NetworkScanner()
-    print(NS.central_hub(True))
-
-else:
     pass
+

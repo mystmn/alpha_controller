@@ -1,8 +1,10 @@
 import random
 from config import core
-from helpers import logs, menu
-from helpers import nmap
-from models import project, main_engine, net_scan
+from helpers import logs, menu, misc
+from models.db import config
+from helpers.nmap import NetworkScanner as NS
+#  from models import project, main_engine, net_scan
+import models
 
 
 class Main(object):
@@ -19,28 +21,37 @@ class Main(object):
         '''
             Display Menu Options
         '''
-
-        NSC = nmap.NetworkScanner()
-
-        item_given = NSC.terminal_display()
-
-        '''
-            Return route -n results
-        '''
-        network_log, results = NSC.central_hub(item_given)
+        network_log, results = NS().central_hub()
         logs.Scribe(dict, network_log)
-
 
         '''
             Accessing DB
         '''
-        NSC = main_engine.Controller(self.core_files['Model'] + "main.db", net_scan.schema())
+
+        #  s = getattr(models.Defend, "schema")
+        s = [self.scrape(x) for x in misc.read_folder_files(self.core_files['Model'], "py")]
+        r = {}
+
+        for e in s:
+            for k, v in e.items():
+                r[k] = v.schema()
+
+        exit(r)
+
+        NSC = config.Tunnel(self.core_files['DB'] + "main.db", s())
 
         name = "cocsws{}".format(random.randrange(100, 999999))
         NSC.db_insert([name, "location : WB227"])
-        logger.append(NSC.journal_logs())
+        logs.Scribe(dict, NSC.journal_logs())
 
         NSC.db_termination()
+
+    @staticmethod
+    def scrape(name):
+        g = {}
+        namey = "models." + name
+        g[name] = __import__(namey, fromlist=[''])
+        return g
 
         '''
         models running :: project, net_scan
@@ -58,7 +69,6 @@ class Main(object):
 
         #  Data Harvesting
         #  -> Sites
-
 
 if __name__ == "__main__":
     pass

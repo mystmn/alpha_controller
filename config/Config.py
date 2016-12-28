@@ -16,6 +16,7 @@ class Core(object):
         }
         x['structure'] = {
             'Model': "/models/",
+            'DB': "/models/db/",
             'Controller': "/controllers/",
             'Root': "/",
         }
