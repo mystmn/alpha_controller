@@ -3,7 +3,7 @@ import sqlite3 as sql3
 
 
 class Tunnel(object):
-    def __init__(self, db_file=None, model_schema=None):
+    def __init__(self, db_file=None, model_schema=None, model_name=None):
         ''' App Mandatory Start '''
         self.self_name = type(self).__name__
         self.log = {100: [], 200: [], 300: []}
@@ -11,12 +11,12 @@ class Tunnel(object):
         ''' App Mandatory End '''
 
         self.db = db_file + "master.db"
-        self.model = model_schema['schema']
-        self.blacklist = model_schema['filter-out']
+        self.name = model_schema[model_name]
+        self.blacklist = self.name['filter-out']
 
-        self.table = self.model['table_name']
-        self.fields = self.model['fields']
-
+        self.schema = self.name['schema']
+        self.table = self.schema['table_name']
+        self.fields = self.schema['fields']
         ''' Mandatory Functions'''
         self.validate_db_path()
 
@@ -53,7 +53,7 @@ class Tunnel(object):
             return list(results)
 
         except sql3.OperationalError as e:
-            self.log[200].append("FAILURE" + returns + "{}".format(e))
+            self.log[100].append("FAILURE" + returns + "{}".format(e))
 
     def db_insert(self, values):
         returns = ":: data inserted = "
@@ -74,12 +74,13 @@ class Tunnel(object):
 
             s += k[:-1] + ")"
 
+            print(s)
             conn.execute(s)
             conn.commit()
             self.log[200].append("SUCCESS" + returns + "{}".format(s))
 
         except sql3.IntegrityError as e:
-            self.log[200].append("FAILURE" + returns + "{}".format(e))
+            self.log[100].append("FAILURE" + returns + "{}".format(e))
 
     def validate_db_path(self):
         returns = "::db_path=\'{}\' exist already".format(self.db)
@@ -98,18 +99,17 @@ class Tunnel(object):
                 self.create_table()
                 pass
             else:  # Something unexpected went wrong so reraise the exception.
-                self.log[200].append("FAILURE in db_file creation" + " :: {}".format(e))
+                self.log[100].append("FAILURE in db_file creation" + " :: {}".format(e))
 
     def create_table(self):
-        returns = "::table=\'{}\' has been created".format(self.table)
+        returns = "::table=\'{}\' has been validated or created".format(self.table)
         columns = []
 
         #  Sort via the order of list(fields)
-        for h in self.fields:
-            for k, v in self.model.items():
-                if k == h:
-                    string = "{} {}".format(k, v)
-                    columns.append(string)
+        for each_field in self.fields:
+            for k, v in self.schema.items():
+                if k == each_field:
+                    columns.append("{} {}".format(k, v))
 
         try:
             x = "CREATE TABLE IF NOT EXISTS {tb} ({col})".format(tb=self.table, col=', '.join(columns))
@@ -117,7 +117,7 @@ class Tunnel(object):
             self.log[200].append("SUCCESS" + returns)
 
         except:
-            self.log[200].append("FAILURE" + returns)
+            self.log[100].append("FAILURE" + returns)
             exit("Need to add error catcher 'create_table'")
 
     def check_record_exist_in_table(self):
@@ -130,4 +130,4 @@ class Tunnel(object):
             self.log[200].append("SUCCESS" + returns)
 
         except:
-            self.log[200].append("FAILURE" + returns)
+            self.log[100].append("FAILURE" + returns)

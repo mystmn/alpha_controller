@@ -2,7 +2,7 @@ from controllers import Engine
 
 
 class MyApp(object):
-    Engine()
+    Engine
 
 
 if __name__ == '__main__':

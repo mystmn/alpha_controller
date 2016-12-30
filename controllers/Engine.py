@@ -10,8 +10,6 @@ class Main(object):
         self.core_files = core().valid_paths()
 
     def start(self):
-        logger = []
-
         print(self.core_files['tag']['ProjectName'])
         print(self.core_files['tag']['ProjectPurpose'])
         print(self.core_files['Model'])
@@ -22,49 +20,52 @@ class Main(object):
         network_log, results = NS().central_hub()
         logs.Scribe(dict, network_log)
 
+        _table = self.dynamic_db_connection()
+
+        name = "cocsws{}".format(random.randrange(100, 999999))
+        _table['net_scan'].db_insert([name, "location : WB227"])
+        _table['net_scan'].db_termination()
+        logs.Scribe(dict, _table['net_scan'].journal_logs())
+
+        ''''
+        name = "cocsws{}".format(random.randrange(100, 999999))
+        model_results.db_insert([name, "location : WB227"])
+        logs.Scribe(dict, model_results.journal_logs())
+        '''
+
+        # NSC.db_termination()
+
+    def dynamic_db_connection(self):
+        model_results = {}
+
         '''
             Accessing DB
         '''
-        model_conn = self.scrap_model_folder()
-        logs.Scribe(dict, {100: ["..again schema connection.."]})
-        exit()
+        confirmed_models = self.scrap_model_folder()
+        [logs.Scribe(dict, {200: "model keys logged ... {}".format(k)}) for k in confirmed_models.keys()]
 
-        #NSC = config.Tunnel(self.core_files['DB'], dict(model_conn['net_scan']))
+        for k, v in confirmed_models.items():
+            model_results[k] = config.Tunnel(self.core_files['DB'], confirmed_models, k)
 
-        name = "cocsws{}".format(random.randrange(100, 999999))
-        #NSC.db_insert([name, "lcation : WB227"])
-        #logs.Scribe(dict, NSC.journal_logs())
-
-        #NSC.db_termination()
+        return model_results
 
     def scrap_model_folder(self):
-        establish_connectioned = {}
+        establish_connection = {}
 
         model_tags = [self.scrape(x) for x in misc.read_folder_files(self.core_files['Model'], "py")]
 
         for each in model_tags:
-                for k, v in each.items():
-                    establish_connectioned[k] = v.schema()
+            for k, v in each.items():
+                establish_connection[k] = v.schema()
 
-        return establish_connectioned
+        return establish_connection
 
     @staticmethod
     def scrape(name):
         g = {}
-        namey = "models." + name
-        g[name] = __import__(namey, fromlist=[''])
+        names = "models." + name
+        g[name] = __import__(names, fromlist=[''])
         return g
-
-
-
-
-
-
-
-
-
-
-
 
         '''
         models running :: project, net_scan
@@ -82,6 +83,7 @@ class Main(object):
 
         #  Data Harvesting
         #  -> Sites
+
 
 if __name__ == "__main__":
     pass
