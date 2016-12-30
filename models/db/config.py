@@ -10,7 +10,7 @@ class Tunnel(object):
         self.test = False
         ''' App Mandatory End '''
 
-        self.db = db_file
+        self.db = db_file + "master.db"
         self.model = model_schema['schema']
         self.blacklist = model_schema['filter-out']
 

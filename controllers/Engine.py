@@ -3,8 +3,6 @@ from config import core
 from helpers import logs, menu, misc
 from models.db import config
 from helpers.nmap import NetworkScanner as NS
-#  from models import project, main_engine, net_scan
-import models
 
 
 class Main(object):
@@ -27,24 +25,28 @@ class Main(object):
         '''
             Accessing DB
         '''
+        model_conn = self.scrap_model_folder()
+        logs.Scribe(dict, {100: ["..again schema connection.."]})
+        exit()
 
-        #  s = getattr(models.Defend, "schema")
-        s = [self.scrape(x) for x in misc.read_folder_files(self.core_files['Model'], "py")]
-        r = {}
-
-        for e in s:
-            for k, v in e.items():
-                r[k] = v.schema()
-
-        exit(r)
-
-        NSC = config.Tunnel(self.core_files['DB'] + "main.db", s())
+        #NSC = config.Tunnel(self.core_files['DB'], dict(model_conn['net_scan']))
 
         name = "cocsws{}".format(random.randrange(100, 999999))
-        NSC.db_insert([name, "location : WB227"])
-        logs.Scribe(dict, NSC.journal_logs())
+        #NSC.db_insert([name, "lcation : WB227"])
+        #logs.Scribe(dict, NSC.journal_logs())
 
-        NSC.db_termination()
+        #NSC.db_termination()
+
+    def scrap_model_folder(self):
+        establish_connectioned = {}
+
+        model_tags = [self.scrape(x) for x in misc.read_folder_files(self.core_files['Model'], "py")]
+
+        for each in model_tags:
+                for k, v in each.items():
+                    establish_connectioned[k] = v.schema()
+
+        return establish_connectioned
 
     @staticmethod
     def scrape(name):
@@ -52,6 +54,17 @@ class Main(object):
         namey = "models." + name
         g[name] = __import__(namey, fromlist=[''])
         return g
+
+
+
+
+
+
+
+
+
+
+
 
         '''
         models running :: project, net_scan

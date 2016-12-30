@@ -1,11 +1,15 @@
-import logging  ## https://aykutakin.wordpress.com/2013/08/06/logging-to-console-and-file-in-python/
+import logging  # https://aykutakin.wordpress.com/2013/08/06/logging-to-console-and-file-in-python/
+import random
+# We need to create multiple sessions..
+# .. https://docs.python.org/2/howto/logging-cookbook.html#logging-cookbook
 
 
 class Scribe(object):
     def __init__(self, sys_code="", message=""):
+        self.past = None
         self.vault(sys_code, message)
 
-    def vault(self, sys_code="", message=""):
+    def vault(self, sys, message=""):
         code = {
             100: 'critical',
             200: 'info',
@@ -17,72 +21,75 @@ class Scribe(object):
                 self.vault(k, v)
 
         elif isinstance(message, list):
-            if [sys_code is k for k, v in code.items()]:
-                list(map(getattr(Scribe, code[sys_code]), message))
+            if [sys is k for k, v in code.items()]:
+                list(map(getattr(Scribe, code[sys]), message))
+
+        elif isinstance(message, str):
+            _function = getattr(Scribe, code[sys])
+            _function(message)
 
         else:
             exit("Error {} :: No default.code found".format(__file__))
 
+        self.past = True
+
     @staticmethod
-    def info(_list=[]):
+    def info(x=""):
         _code = 200
         _file = "info_dump.log"
 
-        # create the logging file handler
+        #  Random is needed to create a new logger session, if not it'll create duplicates
+        logger = logging.getLogger("INFO.{}".format(random.random()))
+
         file_handler = logging.FileHandler(_file)
 
         formatter = logging.Formatter('%(asctime)s,  %(levelname)s,  %(message)s')
         file_handler.setFormatter(formatter)
 
-        logger = logging.getLogger("INFO")
         logger.setLevel(logging.INFO)
         logger.addHandler(file_handler)
 
-        if isinstance(_list, list):
-            [logger.info("{} :: {}".format(str(_code), str(x))) for x in _list]
-        elif isinstance(_list, str):
-            logger.info("{} :: {}".format(str(_code), str(_list)))
+        if isinstance(x, str):
+            logger.info("{} :: {}".format(str(_code), str(x)))
         else:
             exit("Error {} - {} :: Wrapping code in a list".format(_code, __file__))
 
-    def debug(_list=[]):
+    @staticmethod
+    def debug(x=[]):
         _code = 300
         _file = "debug_dump.log"
 
-        # create the logging file handler
-        file_handler = logging.FileHandler(_file)
+        #  Random is needed to create a new logger session, if not it'll create duplicates
+        logger = logging.getLogger("DEBUG".format(random.random()))
 
+        file_handler = logging.FileHandler(_file)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(class_func)s')
         file_handler.setFormatter(formatter)
-        logger = logging.getLogger("DEBUG")
 
         # Setting the record to be written
         logger.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
 
-        if isinstance(_list, list):
-            [logger.debug("{} :: {}".format(str(_code), str(x))) for x in _list]
-        elif isinstance(_list, str):
-            logger.debug("{} :: {}".format(str(_code), str(_list)))
-
+        if isinstance(x, str):
+            logger.critical("{} :: {}".format(str(_code), str(x)))
         else:
             exit("Error {} - {} :: Wrapping code in a list".format(_code, __file__))
 
-    def critical(_list=[]):
+    @staticmethod
+    def critical(x=[]):
         _code = 100
         _file = "critical_dump.log"
+        #  Random is needed to create a new logger session, if not it'll create duplicates
+        logger = logging.getLogger("CRITICAL.{}".format(random.random()))
+
         file_handler = logging.FileHandler(_file)
 
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
-
-        logger = logging.getLogger("CRITICAL")
         logger.setLevel(logging.CRITICAL)
         logger.addHandler(file_handler)
 
-        if isinstance(_list, list):
-            [logger.critical("{} :: {}".format(str(_code), str(x))) for x in _list]
-        elif isinstance(_list, str):
-            logger.critical("{} :: {}".format(str(_code), str(_list)))
+        if isinstance(x, str):
+            logger.critical("{} :: {}".format(str(_code), str(x)))
         else:
             exit("Error {} - {} :: Wrapping code in a list".format(_code, __file__))

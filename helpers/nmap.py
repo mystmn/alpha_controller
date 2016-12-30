@@ -93,9 +93,18 @@ class NetworkScanner(object):
                 f.write("{}".format(route_gateway_done))
             f.close()
 
-        return self.log, route_gateway_done
+        return self.remove_empty(self.log), route_gateway_done
+
+    @staticmethod
+    def remove_empty(x):
+        filter_log = {}
+
+        for k, v in x.items():
+            if v:
+                filter_log[k] = v
+
+        return filter_log
 
 
 if __name__ == "__main__":
     pass
-
