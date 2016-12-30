@@ -41,6 +41,7 @@ class Scribe(object):
         #  Random is needed to create a new logger session, if not it'll create duplicates
         logger = logging.getLogger("INFO.{}".format(random.random()))
 
+
         file_handler = logging.FileHandler(_file)
 
         formatter = logging.Formatter('%(asctime)s,  %(levelname)s,  %(message)s')
