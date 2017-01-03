@@ -44,7 +44,7 @@ class NetworkScanner(object):
     def menu_listing(self):
         res = {}
         [res.update(each) for each in menu.display_options(self.menu)]
-        return res
+        return dict(res)
 
     def terminal_display(self):
         # Turn the sub.items() to a list for easy comparison
@@ -82,21 +82,15 @@ class NetworkScanner(object):
         scrub_results = misc.results_text_layout(results)
 
         cmd.clear()
-
-        route_gateway_done = [list(filter(None, x)) for x in
+        route_gateway_done = [x for x in
                               misc.filter_out_string(self.black_list_connections, scrub_results)]
 
-        if self.test:
-            self.log[200].append("...printing test results in :: {}".format(self.file['name']))
+        completed = list(filter(None, route_gateway_done))
 
-            with open(self.file['name'], self.file['permission'], newline="\n") as f:
-                f.write("{}".format(route_gateway_done))
-            f.close()
-
-        return self.remove_empty(self.log), route_gateway_done
+        return self.clean_logger(self.log), completed
 
     @staticmethod
-    def remove_empty(x):
+    def clean_logger(x):
         filter_log = {}
 
         for k, v in x.items():

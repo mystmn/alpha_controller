@@ -1,13 +1,20 @@
 import random
-from config import core
+from config import Core
 from helpers import logs, menu, misc
 from models.db import config
 from helpers.nmap import NetworkScanner as NS
 
 
+class NetScan(object):
+
+    @staticmethod
+    def get_name():
+        return __class__.__name__
+
+
 class Main(object):
     def __init__(self):
-        self.core_files = core().valid_paths()
+        self.core_files = Core().get_directories()
 
     def start(self):
         print(self.core_files['tag']['ProjectName'])
@@ -18,14 +25,17 @@ class Main(object):
             Display Menu Options
         '''
         network_log, results = NS().central_hub()
+        print(results)
         logs.Scribe(dict, network_log)
 
-        _table = self.dynamic_db_connection()
+        _tables = self.dynamic_db_connection()
+
+        class_name = NetScan.get_name()
 
         name = "cocsws{}".format(random.randrange(100, 999999))
-        _table['net_scan'].db_insert([name, "location : WB227"])
-        _table['net_scan'].db_termination()
-        logs.Scribe(dict, _table['net_scan'].journal_logs())
+        _tables[class_name].db_insert([name, "location : WB227"])
+        _tables[class_name].db_termination()
+        logs.Scribe(dict, _tables[class_name].journal_logs())
 
         ''''
         name = "cocsws{}".format(random.randrange(100, 999999))
@@ -66,24 +76,6 @@ class Main(object):
         names = "models." + name
         g[name] = __import__(names, fromlist=[''])
         return g
-
-        '''
-        models running :: project, net_scan
-        '''
-        # MEC = main_engine.Controller(self.db, project.schema())
-
-        # MEC.db_select(['name', 'deadline'])
-
-        # MEC.db_insert(["Subs", "pies", "best food around"])
-
-        # MEC.db_termination()
-
-        #  Commands to send out among the network to gather
-        #  -> Models, Names, IP
-
-        #  Data Harvesting
-        #  -> Sites
-
 
 if __name__ == "__main__":
     pass

@@ -1,1 +1,1 @@
-from config.Config import Core as core
+from config.Config import Core

@@ -4,37 +4,40 @@ import inspect
 
 #  Check List
 class Core(object):
+
     @staticmethod
-    def path_finder():
-        x = {}
-        x['tag'] = {
-            'ProjectName': "** Project Master Blaster has begun ** ",
-            'ProjectPurpose': "** This script was created to scan a network for information **",
-            'Schedule': False,
-            'Menu': False,
-            'Logs': True,
-        }
-        x['structure'] = {
-            'Model': "/models/",
-            'DB': "/models/db/",
-            'Controller': "/controllers/",
-            'Root': "/",
+    def get_path_structure():
+        return {
+            'tag':
+                {
+                    'ProjectName': "** Project Master Blaster has begun ** ",
+                    'ProjectPurpose': "** This script was created to scan a network for information **",
+                    'Schedule': False,
+                    'Menu': False,
+                    'Logs': True,
+                },
+            'structure':
+                {
+                    'Model': "/models/",
+                    'DB': "/models/db/",
+                    'Controller': "/controllers/",
+                    'Root': "/",
+                }
         }
 
-        return x
-
-    def path_join(self, key, value):
+    @staticmethod
+    def path_join(key, value):
 
         parent_directory = os.path.join(os.path.dirname(__file__), '..', '')
 
         return {'{}'.format(key): r'{}{}'.format(parent_directory, value)}
 
     # Verify the needed directory exist
-    def dir_checker(self):
+    def get_directories(self):
         IS = inspect
         x = {}
 
-        for k, v in self.path_finder()['structure'].items():
+        for k, v in self.get_path_structure()['structure'].items():
             validated_dir = self.path_join(k, v)
 
             try:
@@ -45,16 +48,11 @@ class Core(object):
             except:
                 exit("{} doesn't exist".format())
 
-        x['tag'] = self.path_finder()['tag']
+        x['tag'] = self.get_path_structure()['tag']
 
         #  print("{} == {}".format(validated_dir[k], msg))
         return x
 
-    def valid_paths(self):
-        completed_list = self.dir_checker()
-        return completed_list
-
 
 if __name__ == '__main__':
     pass
-
