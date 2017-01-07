@@ -2,9 +2,15 @@ import os  # http://stackabuse.com/python-check-if-a-file-or-directory-exists/
 import inspect
 
 
+def project_tags():
+    core_files = Core().get_directories()
+    print(core_files['tag']['ProjectName'])
+    print(core_files['tag']['ProjectPurpose'])
+    print(core_files['Model'])
+
+
 #  Check List
 class Core(object):
-
     @staticmethod
     def get_path_structure():
         return {

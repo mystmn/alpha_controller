@@ -61,17 +61,17 @@ def convert_to_list(listing):
     return a
 
 
-def filter_out_string(string="", _set=""):
+def blacklist_list_from_list(blacklist="", _set=""):
     a = []
 
     if isinstance(_set, set):
-        if [a.append(e) for e in _set] not in string:
-            return list(a)
+        [a.append(e) for e in _set if e not in blacklist]
+        return list(a)
 
     exit("Requirements not met {} :: != list()".format(__name__, type(_set)))
 
 
-def results_text_layout(x):
+def filter_command_route_n(x):
     '''
         Call $route -n
         Remove header range()...
@@ -88,19 +88,16 @@ def results_text_layout(x):
 
     markers_dict = search_replace_list(x, "\n")
 
-    #  [{i: value}, {i: value}...]
-    #  returns [value, value...]
     marker_list = remove_range_append(markers_dict, header_stop)
 
     for num, each in enumerate(marker_list):
-
-        if num % row == 0:  # find the row starting position
-
+        if num % row == 0:
             if num >= row:  # No need to gather Row Header
                 row_start_pos.append(num + exception_column)
 
-        if [num == e for e in row_start_pos]:
-            list_exception_column.append(each)
+        for e in row_start_pos:
+            if num == e:
+                list_exception_column.append(each)
 
     return set(list_exception_column)
 

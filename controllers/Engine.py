@@ -2,11 +2,10 @@ import random
 from config import Core
 from helpers import logs, menu, misc
 from models.db import config
-from helpers.nmap import NetworkScanner as NS
+from helpers.nmap import NetworkScanner
 
 
 class NetScan(object):
-
     @staticmethod
     def get_name():
         return __class__.__name__
@@ -16,16 +15,23 @@ class Main(object):
     def __init__(self):
         self.core_files = Core().get_directories()
 
-    def start(self):
-        print(self.core_files['tag']['ProjectName'])
-        print(self.core_files['tag']['ProjectPurpose'])
-        print(self.core_files['Model'])
+    @staticmethod
+    def project_tags():
+        core_files = Core().get_directories()
+        print(core_files['tag']['ProjectName'])
+        print(core_files['tag']['ProjectPurpose'])
+        print(core_files['Model'])
 
+    def start(self):
         '''
             Display Menu Options
         '''
-        network_log, results = NS().central_hub()
-        print(results)
+        NS = NetworkScanner()
+
+        r = getattr(NS, "central_hub")
+
+        network_log, results = r()
+
         logs.Scribe(dict, network_log)
 
         _tables = self.dynamic_db_connection()
@@ -77,8 +83,10 @@ class Main(object):
         g[name] = __import__(names, fromlist=[''])
         return g
 
+
 if __name__ == "__main__":
     pass
 
 else:
+    Main().project_tags()
     Main().start()

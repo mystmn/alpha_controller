@@ -1,4 +1,4 @@
-def display_options(set_with_list=""):
+def nmap_initiate_menu(set_with_list=""):
     i = 0
     x = []
     warning = ["Please pick from the following"]
@@ -16,4 +16,4 @@ def display_options(set_with_list=""):
 
     else:
         f = __file__
-        exit("The menu list needs to be tuple()[list]")
+        exit("The menu list needs to be tuple()[list]..{}".format(f))
