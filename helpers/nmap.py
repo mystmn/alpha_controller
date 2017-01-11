@@ -1,7 +1,7 @@
 from helpers import cmd, menu, misc
 
 
-def display_menu():
+def _display_menu():
     return (
         {
             'mes': 'Would you like to run this automatically?',
@@ -36,7 +36,7 @@ def compare_option_viable(res):
     return _user
 
 
-class NetworkScanner(object):
+class MenuPullCommands(object):
     black_list = [
         "0.0.0.0"
     ]
@@ -57,20 +57,21 @@ class NetworkScanner(object):
         _name = type(self).__name__
         self.log[200].append("class __{} begins..".format(_name))
 
-    def central_hub(self):
-        terminal_executed = self.pull_terminal_options()
+    def hub(self):
+        res = {}
+
+        [res.update(each) for each in menu.print_options(_display_menu())]
+
+        _user = res[int(compare_option_viable(res))]
+
+        terminal_executed = self.execute_terminal(_user)
 
         done = self.return_gateway_sources(terminal_executed)
 
         return self.dict_clean_none(self.log), done
 
     @staticmethod
-    def pull_terminal_options():
-        res = {}
-
-        [res.update(each) for each in menu.nmap_initiate_menu(display_menu())]
-
-        _user = res[int(compare_option_viable(res))]
+    def execute_terminal(_user):
 
         executed_commands = cmd.Terminal.linux(_user)
 

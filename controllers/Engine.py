@@ -2,7 +2,7 @@ import random
 from config import Core
 from helpers import logs, menu, misc
 from models.db import config
-from helpers.nmap import NetworkScanner
+from helpers.nmap import MenuPullCommands
 
 
 class NetScan(object):
@@ -26,9 +26,8 @@ class Main(object):
         '''
             Display Menu Options
         '''
-        NS = NetworkScanner()
 
-        r = getattr(NS, "central_hub")
+        r = getattr(MenuPullCommands(), "hub")
 
         network_log, results = r()
 

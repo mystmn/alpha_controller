@@ -1,4 +1,4 @@
-def nmap_initiate_menu(set_with_list=""):
+def print_options(set_with_list=""):
     i = 0
     x = []
     warning = ["Please pick from the following"]
