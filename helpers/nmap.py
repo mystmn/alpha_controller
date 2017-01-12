@@ -1,101 +1,53 @@
-from helpers import cmd, menu, misc
+from helpers import cmd, misc, menu
 
 
-def _display_menu():
-    return (
+def _self():
+    x = dict()
+
+    x['_display_menu'] = (
         {
             'mes': 'Would you like to run this automatically?',
             'reply': "Running automatically...sit back and relax",
-            'com': ['route', '-n'],
+            'com': {
+                'execute': ['route', '-n'],
+                'helper': 'filter_linux_route_n'
+            },
         },
         {
             'mes': 'Shall we run this manually?',
             'reply': 'You have a choice of options',
-            'com': 'commands here',
+            'com': [None, None]
         }
     )
 
+    x['black_list'] = ["0.0.0.0"]
 
-def compare_option_viable(res):
-    while True:
-        mes = "try again.."
-        _user = input("> ")
-
-        if not _user.isdigit():
-            mes += "'{}' needs to be an int()".format(_user)
-            print(mes)
-            continue
-
-        elif _user not in str(res.keys()):
-            mes += "'{}' isn\'t an available option".format(_user)
-            print(mes)
-            continue
-        else:
-            break
-
-    return _user
+    x['log'] = {100: [], 200: [], 300: []}
+    return x
 
 
-class MenuPullCommands(object):
-    black_list = [
-        "0.0.0.0"
-    ]
-
-    log = {100: [], 200: [], 300: []}
-    test = False
-
-    commands = {
-        'ping': "ping -c 2 ",
-    }
-
-    file = {
-        'name': "nmap.txt",
-        'permission': 'w',
-    }
-
-    def __init__(self):
-        _name = type(self).__name__
-        self.log[200].append("class __{} begins..".format(_name))
-
-    def hub(self):
-        res = {}
-
-        [res.update(each) for each in menu.print_options(_display_menu())]
-
-        _user = res[int(compare_option_viable(res))]
-
-        terminal_executed = self.execute_terminal(_user)
-
-        done = self.return_gateway_sources(terminal_executed)
-
-        return self.dict_clean_none(self.log), done
-
+class Search(object):
     @staticmethod
-    def execute_terminal(_user):
+    def hub():
+        self = _self()
 
-        executed_commands = cmd.Terminal.linux(_user)
+        menu_pulled = getattr(menu.DynamicComparative(), "hub")
 
-        return executed_commands[1]
+        app_processing = dict(menu_pulled(self["_display_menu"]))
 
-    def return_gateway_sources(self, results):
+        terminal = cmd.Terminal
 
-        find_valid_gateways = misc.filter_command_route_n(results)
+        cmd_results = terminal.linux_subprocess(app_processing['execute'])
 
-        minor_gateways = misc.blacklist_list_from_list(self.black_list, find_valid_gateways)
+        find_terminal_filter = getattr(terminal, app_processing['helper'])
+
+        filter_processed = find_terminal_filter(cmd_results)
+
+        minor_gateways = misc.blacklist_list_to_list(self['black_list'], filter_processed)
 
         completed = list(filter(None, minor_gateways))
 
-        return completed
-
-    @staticmethod
-    def dict_clean_none(x):
-        filter_log = {}
-
-        for k, v in x.items():
-            if v:
-                filter_log[k] = v
-
-        return filter_log
+        return misc.dict_clean_none(self["log"]), completed
 
 
 if __name__ == "__main__":

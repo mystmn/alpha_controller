@@ -1,8 +1,8 @@
 import random
 from config import Core
-from helpers import logs, menu, misc
+from helpers import logs, misc, nmap
 from models.db import config
-from helpers.nmap import MenuPullCommands
+from helpers import nmap
 
 
 class NetScan(object):
@@ -26,11 +26,9 @@ class Main(object):
         '''
             Display Menu Options
         '''
+        network_log, results = nmap.Search().hub()
 
-        r = getattr(MenuPullCommands(), "hub")
-
-        network_log, results = r()
-
+        print(results)
         logs.Scribe(dict, network_log)
 
         _tables = self.dynamic_db_connection()

@@ -61,7 +61,7 @@ def convert_to_list(listing):
     return a
 
 
-def blacklist_list_from_list(blacklist="", _set=""):
+def blacklist_list_to_list(blacklist="", _set=""):
     a = []
 
     if isinstance(_set, set):
@@ -69,38 +69,6 @@ def blacklist_list_from_list(blacklist="", _set=""):
         return list(a)
 
     exit("Requirements not met {} :: != list()".format(__name__, type(_set)))
-
-
-def filter_command_route_n(x):
-    '''
-        Call $route -n
-        Remove header range()...
-        Create list with thread_results...
-        find() row starts from \n and...
-        :return set(list_exception_column)
-    '''
-
-    header_stop = 4
-    row_start_pos = []
-    row = 8
-    exception_column = 1
-    list_exception_column = []
-
-    markers_dict = search_replace_list(x, "\n")
-
-    marker_list = remove_range_append(markers_dict, header_stop)
-
-    for num, each in enumerate(marker_list):
-        if num % row == 0:
-            if num >= row:  # No need to gather Row Header
-                row_start_pos.append(num + exception_column)
-
-        for e in row_start_pos:
-            if num == e:
-                list_exception_column.append(each)
-
-    return set(list_exception_column)
-
 
 def read_folder_files(folder_path, pattern, black_list=["__init__"]):
     grab = glob.glob("{}*.{}".format(folder_path, pattern))
@@ -115,3 +83,13 @@ def read_folder_files(folder_path, pattern, black_list=["__init__"]):
             gather.append(g[s:])
 
     return gather
+
+
+def dict_clean_none(x):
+    filter_log = {}
+
+    for k, v in x.items():
+        if v:
+            filter_log[k] = v
+
+    return filter_log
