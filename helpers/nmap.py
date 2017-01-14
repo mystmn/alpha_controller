@@ -8,14 +8,11 @@ def _self():
         {
             'mes': 'Would you like to run this automatically?',
             'reply': "Running automatically...sit back and relax",
-<<<<<<< HEAD
             'com': ['route']
-=======
             'com': {
                 'execute': ['route', '-n'],
                 'helper': 'filter_linux_route_n'
             },
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
         },
         {
             'mes': 'Shall we run this manually?',
@@ -26,7 +23,7 @@ def _self():
 
     x['black_list'] = ["0.0.0.0"]
 
-<<<<<<< HEAD
+
 def commands():
     return {
         'ping': "ping -c 2 ",
@@ -55,11 +52,13 @@ class NetworkScanner(object):
         exit(done)
 
         return self.dict_clean_none(self.log), done
-=======
-    x['log'] = {100: [], 200: [], 300: []}
-    return x
 
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
+        x = {'log':
+                 {100: [], 200: [], 300: []}
+             }
+
+        return x
+
 
 class Search(object):
     @staticmethod
@@ -68,7 +67,6 @@ class Search(object):
 
         menu_pulled = getattr(menu.DynamicComparative(), "hub")
 
-<<<<<<< HEAD
         _user = res[int(misc.user_input_need_int(res))]
 
         for k, v in res.items():
@@ -82,11 +80,9 @@ class Search(object):
         _func = getattr(cmd.Terminal, "linux")
 
         executed_commands = _func(_user)
-=======
         app_processing = dict(menu_pulled(self["_display_menu"]))
 
         terminal = cmd.Terminal
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
 
         cmd_results = terminal.linux_subprocess(app_processing['execute'])
 
