@@ -115,3 +115,23 @@ def read_folder_files(folder_path, pattern, black_list=["__init__"]):
             gather.append(g[s:])
 
     return gather
+
+
+def user_input_need_int(res):
+    while True:
+        mes = "try again.."
+        _user = input("> ")
+
+        if not _user.isdigit():
+            mes += "'{}' needs to be an int()".format(_user)
+            print(mes)
+            continue
+
+        elif _user not in str(res.keys()):
+            mes += "'{}' isn\'t an available option".format(_user)
+            print(mes)
+            continue
+        else:
+            break
+
+    return _user

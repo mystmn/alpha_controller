@@ -6,7 +6,7 @@ def display_menu():
         {
             'mes': 'Would you like to run this automatically?',
             'reply': "Running automatically...sit back and relax",
-            'com': ['route', '-n'],
+            'com': ['route']
         },
         {
             'mes': 'Shall we run this manually?',
@@ -16,24 +16,12 @@ def display_menu():
     )
 
 
-def compare_option_viable(res):
-    while True:
-        mes = "try again.."
-        _user = input("> ")
-
-        if not _user.isdigit():
-            mes += "'{}' needs to be an int()".format(_user)
-            print(mes)
-            continue
-
-        elif _user not in str(res.keys()):
-            mes += "'{}' isn\'t an available option".format(_user)
-            print(mes)
-            continue
-        else:
-            break
-
-    return _user
+def commands():
+    return {
+        'ping': "ping -c 2 ",
+        'route': ['route', '-n'],
+        'nmapOS': ['nmap', '-O' 'x']
+    }
 
 
 class NetworkScanner(object):
@@ -44,15 +32,6 @@ class NetworkScanner(object):
     log = {100: [], 200: [], 300: []}
     test = False
 
-    commands = {
-        'ping': "ping -c 2 ",
-    }
-
-    file = {
-        'name': "nmap.txt",
-        'permission': 'w',
-    }
-
     def __init__(self):
         _name = type(self).__name__
         self.log[200].append("class __{} begins..".format(_name))
@@ -62,6 +41,8 @@ class NetworkScanner(object):
 
         done = self.return_gateway_sources(terminal_executed)
 
+        exit(done)
+
         return self.dict_clean_none(self.log), done
 
     @staticmethod
@@ -70,9 +51,19 @@ class NetworkScanner(object):
 
         [res.update(each) for each in menu.nmap_initiate_menu(display_menu())]
 
-        _user = res[int(compare_option_viable(res))]
+        _user = res[int(misc.user_input_need_int(res))]
 
-        executed_commands = cmd.Terminal.linux(_user)
+        for k, v in res.items():
+            pass
+
+        p = commands()
+        for each in p:
+            print(each)
+        exit()
+
+        _func = getattr(cmd.Terminal, "linux")
+
+        executed_commands = _func(_user)
 
         return executed_commands[1]
 
