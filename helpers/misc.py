@@ -85,6 +85,26 @@ def read_folder_files(folder_path, pattern, black_list=["__init__"]):
     return gather
 
 
+<<<<<<< HEAD
+def user_input_need_int(res):
+    while True:
+        mes = "try again.."
+        _user = input("> ")
+
+        if not _user.isdigit():
+            mes += "'{}' needs to be an int()".format(_user)
+            print(mes)
+            continue
+
+        elif _user not in str(res.keys()):
+            mes += "'{}' isn\'t an available option".format(_user)
+            print(mes)
+            continue
+        else:
+            break
+
+    return _user
+=======
 def dict_clean_none(x):
     filter_log = {}
 
@@ -93,3 +113,4 @@ def dict_clean_none(x):
             filter_log[k] = v
 
     return filter_log
+>>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413

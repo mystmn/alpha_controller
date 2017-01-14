@@ -8,6 +8,7 @@ def _self():
         {
             'mes': 'Would you like to run this automatically?',
             'reply': "Running automatically...sit back and relax",
+            'com': ['route']
             'com': {
                 'execute': ['route', '-n'],
                 'helper': 'filter_linux_route_n'
@@ -22,8 +23,41 @@ def _self():
 
     x['black_list'] = ["0.0.0.0"]
 
-    x['log'] = {100: [], 200: [], 300: []}
-    return x
+
+def commands():
+    return {
+        'ping': "ping -c 2 ",
+        'route': ['route', '-n'],
+        'nmapOS': ['nmap', '-O' 'x']
+    }
+
+
+class NetworkScanner(object):
+    black_list = [
+        "0.0.0.0"
+    ]
+
+    log = {100: [], 200: [], 300: []}
+    test = False
+
+    def __init__(self):
+        _name = type(self).__name__
+        self.log[200].append("class __{} begins..".format(_name))
+
+    def central_hub(self):
+        terminal_executed = self.pull_terminal_options()
+
+        done = self.return_gateway_sources(terminal_executed)
+
+        exit(done)
+
+        return self.dict_clean_none(self.log), done
+
+        x = {'log':
+                 {100: [], 200: [], 300: []}
+             }
+
+        return x
 
 
 class Search(object):
@@ -33,6 +67,19 @@ class Search(object):
 
         menu_pulled = getattr(menu.DynamicComparative(), "hub")
 
+        _user = res[int(misc.user_input_need_int(res))]
+
+        for k, v in res.items():
+            pass
+
+        p = commands()
+        for each in p:
+            print(each)
+        exit()
+
+        _func = getattr(cmd.Terminal, "linux")
+
+        executed_commands = _func(_user)
         app_processing = dict(menu_pulled(self["_display_menu"]))
 
         terminal = cmd.Terminal
