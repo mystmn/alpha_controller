@@ -1,21 +1,32 @@
-from helpers import cmd, menu, misc
+from helpers import cmd, misc, menu
 
 
-def display_menu():
-    return (
+def _self():
+    x = dict()
+
+    x['_display_menu'] = (
         {
             'mes': 'Would you like to run this automatically?',
             'reply': "Running automatically...sit back and relax",
+<<<<<<< HEAD
             'com': ['route']
+=======
+            'com': {
+                'execute': ['route', '-n'],
+                'helper': 'filter_linux_route_n'
+            },
+>>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
         },
         {
             'mes': 'Shall we run this manually?',
             'reply': 'You have a choice of options',
-            'com': 'commands here',
+            'com': [None, None]
         }
     )
 
+    x['black_list'] = ["0.0.0.0"]
 
+<<<<<<< HEAD
 def commands():
     return {
         'ping': "ping -c 2 ",
@@ -44,13 +55,20 @@ class NetworkScanner(object):
         exit(done)
 
         return self.dict_clean_none(self.log), done
+=======
+    x['log'] = {100: [], 200: [], 300: []}
+    return x
 
+>>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
+
+class Search(object):
     @staticmethod
-    def pull_terminal_options():
-        res = {}
+    def hub():
+        self = _self()
 
-        [res.update(each) for each in menu.nmap_initiate_menu(display_menu())]
+        menu_pulled = getattr(menu.DynamicComparative(), "hub")
 
+<<<<<<< HEAD
         _user = res[int(misc.user_input_need_int(res))]
 
         for k, v in res.items():
@@ -64,28 +82,23 @@ class NetworkScanner(object):
         _func = getattr(cmd.Terminal, "linux")
 
         executed_commands = _func(_user)
+=======
+        app_processing = dict(menu_pulled(self["_display_menu"]))
 
-        return executed_commands[1]
+        terminal = cmd.Terminal
+>>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
 
-    def return_gateway_sources(self, results):
+        cmd_results = terminal.linux_subprocess(app_processing['execute'])
 
-        find_valid_gateways = misc.filter_command_route_n(results)
+        find_terminal_filter = getattr(terminal, app_processing['helper'])
 
-        minor_gateways = misc.blacklist_list_from_list(self.black_list, find_valid_gateways)
+        filter_processed = find_terminal_filter(cmd_results)
+
+        minor_gateways = misc.blacklist_list_to_list(self['black_list'], filter_processed)
 
         completed = list(filter(None, minor_gateways))
 
-        return completed
-
-    @staticmethod
-    def dict_clean_none(x):
-        filter_log = {}
-
-        for k, v in x.items():
-            if v:
-                filter_log[k] = v
-
-        return filter_log
+        return misc.dict_clean_none(self["log"]), completed
 
 
 if __name__ == "__main__":

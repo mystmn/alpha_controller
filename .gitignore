@@ -2,3 +2,4 @@
 .idea/
 batchfile/
 venv/
+*__pycache__
