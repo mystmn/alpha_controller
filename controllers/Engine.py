@@ -1,11 +1,7 @@
-import random
+import random, os
 from config import Core
-from helpers import logs, misc, nmap
+from helpers import logs, misc, nmap, menu, cmd
 from models.db import config
-<<<<<<< HEAD
-=======
-from helpers import nmap
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
 
 
 class NetScan(object):
@@ -26,16 +22,25 @@ class Main(object):
         print(core_files['Model'])
 
     def start(self):
-        '''
-            Display Menu Options
-        '''
-<<<<<<< HEAD
-        NS = getattr(nmap.NetworkScanner(), "central_hub")
+        app_commands = nmap.execute()
+
+        print(app_commands)
+        exit()
+
+        CT = cmd.Terminal
+        #  list_com = ('linux_subprocess', 'filter_linux_route_n')
+
+        res = CT.linux_subprocess(['route', '-n'])
+
+        scrubbed_results = CT.filter_linux_route_n(res)
+
+        host_up = CT.confirm_host_up(scrubbed_results, app_commands['black_list'])
+
+        exit(host_up)
 
         network_log, results = NS()
-=======
-        network_log, results = nmap.Search().hub()
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413
+
+        network_log, results = nmap.Search().menu_pick()
 
         print(results)
         logs.Scribe(dict, network_log)

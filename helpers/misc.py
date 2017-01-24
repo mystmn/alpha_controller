@@ -53,6 +53,10 @@ def remove_range_append(x="", num=""):
     return list(s)
 
 
+def isset_list(class_name, pass_list, white_list):
+    [exit("{}.{} doesnt exist in dict()".format(class_name, y)) for y in white_list if y not in pass_list]
+
+
 def convert_to_list(listing):
     a = []
 
@@ -70,6 +74,7 @@ def blacklist_list_to_list(blacklist="", _set=""):
 
     exit("Requirements not met {} :: != list()".format(__name__, type(_set)))
 
+
 def read_folder_files(folder_path, pattern, black_list=["__init__"]):
     grab = glob.glob("{}*.{}".format(folder_path, pattern))
     dot = "."
@@ -85,7 +90,6 @@ def read_folder_files(folder_path, pattern, black_list=["__init__"]):
     return gather
 
 
-<<<<<<< HEAD
 def user_input_need_int(res):
     while True:
         mes = "try again.."
@@ -104,7 +108,8 @@ def user_input_need_int(res):
             break
 
     return _user
-=======
+
+
 def dict_clean_none(x):
     filter_log = {}
 
@@ -113,4 +118,3 @@ def dict_clean_none(x):
             filter_log[k] = v
 
     return filter_log
->>>>>>> a234a3e7f42d8d3817c4d0c5f6d127fac954a413

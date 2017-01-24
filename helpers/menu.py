@@ -1,34 +1,25 @@
+from helpers.misc import isset_list
+
+
 class DynamicComparative(object):
-    def hub(self, _display_menu):
+    @classmethod
+    def is_method(cls):
+        return cls.__name__
+
+    def menu_pick(self, x):
         res = {}
 
-        dict_waiting = list(self.execute_pick_menu(_display_menu))
+        white_list = ['_display_menu']
+
+        isset_list(self.is_method(), x, white_list)
+
+        dict_waiting = list(self.execute_pick_menu(x['_display_menu']))
 
         [res.update(each) for each in dict_waiting]
 
-        result = self.is_user_pick_optional(res)
+        int_results = self.is_user_pick_optional(res)
 
-        return res[result]
-
-    @staticmethod
-    def is_user_pick_optional(res):
-        while True:
-            mes = "try again.."
-            _user = input("> ")
-
-            if not _user.isdigit():
-                mes += "'{}' needs to be an int()".format(_user)
-                print(mes)
-                continue
-
-            elif _user not in str(res.keys()):
-                mes += "'{}' isn\'t an available option".format(_user)
-                print(mes)
-                continue
-            else:
-                break
-
-        return int(_user)
+        return res[int_results]
 
     @staticmethod
     def execute_pick_menu(set_with_list=""):
@@ -52,3 +43,23 @@ class DynamicComparative(object):
         else:
             f = __file__
             exit("The menu list needs to be tuple()[list]..{}".format(f))
+
+    @staticmethod
+    def is_user_pick_optional(res):
+        while True:
+            mes = "try again.."
+            _user = input("> ")
+
+            if not _user.isdigit():
+                mes += "'{}' needs to be an int()".format(_user)
+                print(mes)
+                continue
+
+            elif _user not in str(res.keys()):
+                mes += "'{}' isn\'t an available option".format(_user)
+                print(mes)
+                continue
+            else:
+                break
+
+        return int(_user)
