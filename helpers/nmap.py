@@ -1,81 +1,92 @@
-from helpers import menu
+from helpers.menu import DynamicComparative
 
 
-def execute():
-    menu_picked = getattr(menu.DynamicComparative(), "menu_pick")
+class Execute(object):
+    def secure(self):
 
-    helper_nmap = menu_picked(self())
+        menu_comparative = getattr(DynamicComparative(), "menu_pick")
 
-    helper_nmap['black_list'] = self()['black_list']
+        v = self._menu()
 
-    '''
-        needs to be in order
-        provide executes and filters
-        depend on executing dependencies
-    '''
-    #  r = [
-    #      {'execute': {'route': 'X'}, {'ping': 'X'}},
-    #      {'filters': 'route'}]
+        menu_commands = menu_comparative(v)
+        #    print("main var == {}".format(menu_commands))
 
-    new = {}
-    i = 0
-    for each in helper_nmap['execute']:
+        p = []
+        i = 0
+        for module_name in menu_commands['execute']:
+            i += 1
 
-        i += 1
+            if module_name in self.commands().keys():
+                _request = self.commands()[module_name]
+                try:
+                    _func = getattr(self, module_name)
+                except:
+                    exit("Unable to associate _func")
 
-        if each in commands():
+                p.append({i: _func(_request)})
 
-            new[i] = ({'exe': commands()[each]})
+        print(p)
+        exit()
 
-            if each in filters():
-                new[i].update({'fi': filters()[each]})
-
-    return new
-
-
-def self():
-    x = dict()
-
-    x['_display_menu'] = (
-        {
-            'mes': 'Would you like to run this automatically?',
-            'reply': "Running automatically...sit back and relax",
-            'com': {
-                #  maintain the order of execution
-                'execute': ('route', 'ping'),
-                'filter': ('route', None)
-            },
-        },
-        {
-            'mes': 'Shall we run this manually?',
-            'reply': 'You have a choice of options',
-            'com': [None, None]
-        }
-    )
-
-    x['black_list'] = ["0.0.0.0"]
-
-    return x
-
-
-def commands():
-    return ({
-        'route': ['route', '-n'],
-        'ping': ["ping", '{}', "-c", "2"],
-        'nmapOS': ['nmap', '-O' 'x']
-    })
-
-
-def filters():
-    return {
-        'route': 'filter_linux_route_n'
-    }
-
-
-class Search(object):
     @staticmethod
-    def hub():
-        pass
+    def commands():
+        return ({
+            'route_gateway': ['route', '-n'],
+            'nmapOS': ['nmap', '-O' 'x']
+        })
+
+    @staticmethod
+    def filters():
+        return ({
+            'route': 'filter_linux_route_n'
+        })
+
+    @staticmethod
+    def _menu():
+        x = dict()
+
+        x['_display_menu'] = (
+            {
+                'mes': 'Would you like to run this automatically?',
+                'reply': "Running automatically...sit back and relax",
+                'com': {
+                    #  maintain the order of execution
+                    'execute': ['route_gateway'],
+                    'filter': ['route_gateway']
+                },
+            },
+            {
+                'mes': 'Shall we run this manually?',
+                'reply': 'You have a choice of options',
+                'com': [None, None]
+            }
+        )
+
+        return x
+
+    @staticmethod
+    def terminal(x, y):
+        import helpers.cmd as c
+        _func = getattr(c.Terminal, x)
+
+        return _func(y)
+
+    def ping(self, x, _blacklist=None):
+        if _blacklist is None:
+            _blacklist = ["0.0.0.0"]
+
+        ping_hostup = self.terminal('confirm_host_up', [x, _blacklist])
+
+        return ping_hostup
+
+    def route_gateway(self, x=None):
+        route_process = self.terminal('linux_subprocess', x)
+
+        route_filtered = self.terminal('filter_linux_route_n', route_process)
+
+        route_completed = self.ping(route_filtered)
+
+        return route_completed
 
 
 if __name__ == "__main__":

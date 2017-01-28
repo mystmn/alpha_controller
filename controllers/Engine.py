@@ -22,21 +22,10 @@ class Main(object):
         print(core_files['Model'])
 
     def start(self):
-        app_commands = nmap.execute()
+        app_commands = getattr(nmap.Execute(), "secure")
 
-        print(app_commands)
-        exit()
-
-        CT = cmd.Terminal
-        #  list_com = ('linux_subprocess', 'filter_linux_route_n')
-
-        res = CT.linux_subprocess(['route', '-n'])
-
-        scrubbed_results = CT.filter_linux_route_n(res)
-
-        host_up = CT.confirm_host_up(scrubbed_results, app_commands['black_list'])
-
-        exit(host_up)
+        print(app_commands())
+        exit("end")
 
         network_log, results = NS()
 
